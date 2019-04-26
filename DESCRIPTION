@@ -1,0 +1,24 @@
+Package: combr
+Type: Package
+Title: Combine Data Sources to Estimate Population Average Treatment Effects
+Version: 0.1.0
+Author: Jeffrey A. Boatman [aut, cre],
+  David M. Vock [aut],
+  Joseph S. Koopmeiners [aut]
+Maintainer: Jeffrey A. Boatman <boat0036@umn.edu>
+Description: Combine Data Sources to Estimate Population Average Treatment Effects.
+License: GPL (>= 3)
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.1.1
+Imports:
+    mvtnorm(>= 1.0.8),
+    BART(>= 2.1),
+    Rcpp (>= 1.0.0)
+LinkingTo: 
+    Rcpp
+Suggests: 
+    knitr,
+    rmarkdown,
+    ggplot2
+VignetteBuilder: knitr

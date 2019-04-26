@@ -1,0 +1,142 @@
+#  combr: combine data sources to estimate population average treatment effect.
+#  Copyright (C) <2019>  <Jeffrey A. Verdoliva Boatman>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+#Fit a Bayesian linear model with a normal-inverse gamma prior.
+#
+#@details Does not include a formula argument because the formula is passed indirectly
+#via the design matrix \code{X}.
+#@param Y Outcome variable. Must be a column vector.
+#@param X Design matrix. Must have the same number of rows as \code{Y}.
+#@param X0 A design matrix used for the causal estimator. It is a modified version
+#          of \code{X} representing the counterfactual where all observations are
+#          assigned to the treatment group 0 and are compliant.
+#@param X1 A design matrix used for the causal estimator. It is a modified version
+#          of \code{X} representing the counterfactual where all observations are
+#          assigned to the treatment group 1 and are compliant.
+#@param ndpost The desired number of draws from the posterior distribution of
+#              \out{E(Y<sub>1</sub> - Y<sub>0</sub>)}.
+bayes_lm <- function(Y, X, X0, X1, ndpost,
+  prior_calibration) {
+
+  X <- as.matrix(X)
+  X0 <- as.matrix(X0)
+  X1 <- as.matrix(X1)
+  p <- ncol(X)
+  n <- nrow(X)
+
+  flm <- lm(Y ~ X + 0)
+
+  # (fairly) vague Normal-Inverse Gamma prior specifications
+  if (prior_calibration == "none") {
+    muBeta <- rep(0, p)
+  } else if (prior_calibration == "empirical") {
+    muBeta <- unname(coef(flm))
+  }
+  rho    <- 0.2
+  Vbeta  <- 100 * (rho * matrix(1, p, p) + (1 - rho) * diag(p))
+
+  # specification for IG(a, b) prior on sigma ^ 2. This
+  # prior is specified using the frequentist point estimate
+  # and asymptotic variance of sigma ^ 2.
+  # ss_mu <- 10 ^ 2    # old: mean for sigma ^ 2
+  # ss_sd <- 2         # old: sd for sigma ^ 2
+  ss_mu <- summary(flm)$sigma ^ 2
+  if (is.na(ss_mu))
+    stop("insufficient number of observations to fit model.")
+  ss_sd <- sqrt(2 * ss_mu ^ 4 / n)
+  # mean and sd re-paramaterized for inverse gamma dist'n
+  b <- ss_mu ^ 3 / ss_sd ^ 2 + ss_mu
+  a <- (b + ss_mu) / ss_mu
+
+  # b / (a - 1)
+  # b ^ 2 / ((a - 1) ^ 2 * (a - 2))
+
+  Vbeta_inv <- solve(Vbeta)
+  tX <- t(X)
+  tXX <- tX %*% X
+  tryCatch(solve(tXX),
+    error = function(e) warning("Multicollinearity in design matrix X."))
+
+
+  # posterior paramaters
+  V_star <- solve(Vbeta_inv + tXX)
+  mu_star <- V_star %*% (Vbeta_inv %*% muBeta + tX %*% Y)
+  a_star <- a + n / 2
+  b_star <- b + 1 / 2 * c((t(muBeta) %*% Vbeta_inv %*% muBeta +
+      t(Y) %*% Y - t(mu_star) %*% solve(V_star) %*% mu_star))
+
+  # marginal likelihood ---
+  mu    <- X %*% muBeta # should be == 0 unless muBeta updated
+  shape <- b / a * (diag(n) + X %*% Vbeta %*% tX)
+  log_marg_like <- dmvt(c(Y), c(mu), shape, df = 2 * a)
+
+  # don't name dimensions here. Will be done in the calling function.
+  beta_post <- array(dim = c(ndpost, p))
+  Y0 <- array(dim = c(ndpost, nrow(X0)))
+  Y1 <- array(dim = c(ndpost, nrow(X1)))
+
+  # draw from posterior
+  tryCatch(
+    ss_post <- 1 / rgamma(ndpost, a_star, b_star),
+    error = function(cnd) stop("problem drawing from sigma ^ 2 posterior.")
+  )
+
+
+  for(ii in seq_len(ndpost)) {
+    beta_post[ii, ] <- mu_star + t(chol(ss_post[ii] * V_star)) %*% rnorm(p)
+    mu_post  <- c(X %*% beta_post[ii, ])
+    Y0[ii, ] <- t(X0 %*% beta_post[ii, ])
+    Y1[ii, ] <- t(X1 %*% beta_post[ii, ])
+  }
+
+  # bs <- cov(beta_post)
+  # fr <- vcov(summary(lm(Y ~ X + 0)))
+  # round(bs / fr, 2)
+  # colMeans(beta_post) / coef(lm(Y ~ X + 0))
+
+  pate_post <- apply(Y1 - Y0, 1, bayes_boot_mean)
+
+  out <- list(
+    log_marg_like = log_marg_like,
+    pate_post     = pate_post)
+  out$EY0 <- rowMeans(Y0)
+  out$EY1 <- rowMeans(Y1)
+
+  out
+}
+
+# set.seed(100)
+# n <- 1e3
+# dat <- data.frame(
+#   src = sample(c("a", "b", "c"), n, replace = TRUE),
+#   trt = sample(c(1, 0), n, replace = TRUE),
+#   x1  = rnorm(n),
+#   x2  = rnorm(n),
+#   y   = rnorm(n)
+# )
+
+# mf <- estimate_pate(y ~ src + trt + x1 + x2, data = dat, src_var = "src", primary_source = "a", trt_var = "trt")
+# mt <- attr(mf, "terms")
+# mm <- model.matrix(mt, mf)
+#
+# X0 <- X1 <- model.matrix(mt, subset(mf, src == "a"))
+# X0[, 'trt'] <- 0
+# X1[, 'trt'] <- 1
+# Y <- matrix(model.response(mf, "numeric"), ncol = 1)
+
+# debug(fit_bayes_lm)
+# bylm <- bayes_lm(Y, X = mm, X0, X1, ndpost = 1e4)
+

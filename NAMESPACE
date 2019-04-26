@@ -1,0 +1,20 @@
+useDynLib('combr')
+importFrom("stats", "lm", "relevel", "rgamma", "rnorm", "runif",
+  "model.matrix", "model.response", "terms", "coef",
+  "drop.terms", "na.omit", "nlm", "predict", "qchisq", "sd")
+importFrom("utils", "capture.output")
+export(pate)
+export(print.pate)
+export(summary.pate)
+# -----------------------------------
+# don't export in production version:
+#export(fit_mems)
+#export(bart)
+#export(bayes_lm)
+#export(failwith)
+#export(make_prior_trees)
+#export(make_one_prior_tree)
+# -----------------------------------
+importFrom(Rcpp, sourceCpp)
+importFrom(mvtnorm, dmvt)
+importFrom(BART, bartModelMatrix, wbart)
