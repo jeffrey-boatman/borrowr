@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+
+<title>Estimating Population Average Treatment Effects with the combr Package</title>
+
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+</style>
+
+
+
+<link href="data:text/css;charset=utf-8,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23header%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%20code%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" rel="stylesheet" type="text/css" />
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Estimating Population Average Treatment Effects with the combr Package</h1>
+
+
+
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>The combr package combines data from a primary source and supplementary sources to estimate the population averate treatment effect (PATE).</p>
+<p>To address confounding, the combr package estimates the PATE by fiting a model for the conditional mean given treatment and confounders. Currently, two models are available, a Bayesian linear model with an inverse-gamma prior, and Bayesian Additive Regression Trees (BART). The user must specify a formula for the conditional mean. This requires more thought for the Bayesian linear model as the analyst must carefully consider the functional form of the regression relationship. For BART, the right hand side of the formula need only include the confounders and the treatment variable without specification of the functional form.</p>
+<p>Borrowing between data sources is done with <a href="https://www.ncbi.nlm.nih.gov/pubmed/29036300">Multisource Exchangeability Models</a> (MEMs; Kaizer et al., 2018) . MEMs borrow by assuming that each supplementary data source is either “exchangable”, or not, with the primary data source. Two data sources are considered exchangeable if their model parameters are equal. Each data source can be exchangeable with the primary data, or not, so if there are <span class="math inline">\(r\)</span> data sources, there are <span class="math inline">\(2 ^ r\)</span> possible configurations regarding the exchangeability assumptions. Each of these configurations corresponds to a single MEM. The parameters for each MEM are estimated, and we compute a posterior probability for each. The posterior density of the PATE is a weighted posterior across all possible MEMs.</p>
+</div>
+<div id="the-adapt-data" class="section level2">
+<h2>The <code>adapt</code> Data</h2>
+<p>We illustrate usage of the <code>combr</code> package with the <code>adapt</code> data:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(combr)
+<span class="kw">data</span>(adapt)
+<span class="kw">head</span>(adapt)
+<span class="co">#&gt;           y        x  source treatment</span>
+<span class="co">#&gt; 1  97.37711 55.51128 Primary         1</span>
+<span class="co">#&gt; 2  87.29579 26.38264 Primary         0</span>
+<span class="co">#&gt; 3  93.07157 41.99595 Primary         0</span>
+<span class="co">#&gt; 4  83.78115 32.49223 Primary         0</span>
+<span class="co">#&gt; 5  96.03471 36.34139 Primary         1</span>
+<span class="co">#&gt; 6 100.89876 58.61346 Primary         1</span></code></pre></div>
+<p>The data include 3 data sources with a univariate confounding variable <code>x</code> and the treatment variable <code>treatment</code>:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(ggplot2)
+<span class="kw">ggplot</span>(<span class="dt">data =</span> adapt, <span class="dt">mapping =</span> <span class="kw">aes</span>(<span class="dt">x =</span> x, <span class="dt">y =</span> y, <span class="dt">color =</span> <span class="kw">as.factor</span>(treatment))) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_point</span>() <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_smooth</span>(<span class="dt">se =</span> <span class="ot">FALSE</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">facet_wrap</span>(<span class="op">~</span><span class="st"> </span>source) <span class="op">+</span>
+<span class="st">  </span><span class="kw">theme_classic</span>()
+<span class="co">#&gt; `geom_smooth()` using method = 'loess' and formula 'y ~ x'</span></code></pre></div>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAwAAAAEgCAMAAAA0bOSjAAABRFBMVEUAAAAAADoAAGYAOpAAZrYAv8QZGUgZGXEZSHEZSJcZcboaGhozMzM6AAA6ADo6AGY6OpA6kNtIGRlIGUhIGXFISHFISJdIcbpIl5dIl91NTU1NTW5NTY5NbqtNjshmAABmADpmAGZmtv9uTU1uTW5uTY5ubo5ubqtuq8huq+RxGRlxGUhxGXFxSBlxSJdxcRlxcUhxcXFxuv+OTU2OTW6OTY6Obk2ObquOyP+QOgCQkDqQtpCQ27aQ2/+XSBmXSEiXSHGXl0iXl3GXupeX3bqX3f+rbk2rbm6rjk2ryKur5OSr5P+2ZgC22/+2/7a2//+6cRm6cUi63Ze6///Ijk3I///bkDrb///dl0jd///kq27k///4dm3/tmb/unH/yI7/25D/27b/29v/3Zf/5Kv//7b//7r//8j//9v//93//+T///873FiwAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAUO0lEQVR4nO2d+X/UxhnGF8KShislTS+DoYVQ6jRJW47WNCXphdPUtKQFG7Bl7JY1C9b//3s1uo8ZaaQdzbyv5vl+iHdXq9l9pHmeubS7mYUAeMzMtQAAXIIAAK9BAIDXIADAaxAA4DUIAPCaYQGY8YOtcL7KDVl0XAYGwLCK0clt5FbGANgqRwAowdZGfJUjAJRgayO+yhEASrC1EV/lCAAl2NqIr3IEgBJsbcRXOQJACbY24qscAaAEWxvxVY4AdPD6o/MRP03uf/zUwCu2YNxGbz49f/59tWhzB2RaeatwUSd3DL0RAtBB7JE3v3pk4KW6MW+jyCcvPnipePpVWzj6YVh5q3BRG69/YKhGEIAO4gC8++rO6x9+/v5/Pn767uu/RP3Bq7hPSBoi8cSvo5sfqWzWA9MByNIrbqP/3nz25/NnH4XpTfjd2b9S7QFahb86F+3xnaEuAAHoIK6KqL15/dEdcf/dV+ci45+La0U0RB8/FU+8+qn4tzqmA/Duq6QRzXz06QcvX72f3YSEh0Bdws31yQhAB8kc4E5WFe++fhSK/9IKePPZU/HEmy9e/ttEhZifSkZ91dlHhY/uCPHpTUg4AF3C331lor0RIAAdZB6RBeA7MVETT7z7+m9fGBgBjbOWIrqv1Eex6DvpTUg6AGGb8DefmvI/AtCFOgCiPRJDILHDi98aqRHTNopHy5FlSj4SDWlyExIOQLtwMeo0BQLQgToA8ZakkTK1KDHKKpDIauScF2IMfS589cHL9CYkHIBW4Sb9jwB00TIEenH+/Pc+v5MsE/3JiJNGuQ4gFnwiqT/5LGpIfxMvpiQ3IeEAtAp/cT6ZlhkBATDC6x8beZmRr6dmM/cRrmqMq9yCcOIQD8CLs2ZqBgGQgwAQD4Ap2H6ihq9yBIASbG3EV/kUArC4tZPfLO+ure9rlaIIWxvxVT6BAByuXd3Jbk62NsO9a3kpfrAVzlf5eK41SIvKZ1e+FU1/crO8v5N1CCHj2nCtYghslY9qXFPoDoEWt/fD5b3t6NGFCB7HBkAnugE4XM8C0FkKAD707wE6SwHAB90A1OYAo+sCwAq6ATjZ2iivAo0tCwA7eHIdAAA5nlwJBkAOAkCT+XzuWoIfIAAkmc+RADsgACRBAGyBAJAEAbAFAkAT+N8SCABNYH9LIAA0QQdgCQSAJgiAJRAAkmAKYAsEgCTwvy0QAJIgALZAAEiCANgCAaAI/G8NBIAg8L89phkA3osorMVzY5IBYP5JGs7a2YEA0IOzdnYgAOTgrJ0fkwwAbw9x1s6PaQaANQiATRAAciAANkEAqAH/WwUBIAb8bxcEgBgIgF2mHACWa0EcNXNmwgFgeTWAoWTeIACk4KeYOwgAKdgJZs+EAxDyCwA3vRNgygHgFwFWYqfBpAMwZzYK4qR1Kkw5AHN2AXAtwEMmHIA57QA0lVFWO1kmHQDKlpJII53XFliKzphuAOY8AlAIpN1hqeGpOmOyAajbixqpbQr30M5rCzxVZ0wlAJmbShso2z8sJTQR2TgANiAABJjn5BsI10xJVnMkxA/O2qcagGrrSoxaUrn7nzfTDMCcaABKuqrKiOkcArVzrclEAlBNQDUHdChPfCvSiOkcAr3WRo9JBaD461pOjWKim6ssaySndwAIgFsq1qJWEaWeqTFbZ+ucGlwPYyoByJcRKdZDLmuuwLVAEzA9jFYrL27thOHy7tr6fn6jUcolNO2U+1yRAtf6fKbNyodrV3fCk63NcO9adqNRyjEk7VT1etn0LCPATnALLVZ+duXbqAdY3t8RPUF6013KMUTrRtnWc+wEGEpW0zkEWtzeD5f3ttObaOOFCKoBIFsvas8wdBPH0CrpDMDheuz89EanlDsIV0yLMLKaVUgDwOsQCvr3AJ2l3EG4aWqTRVNxC5LTTPS0d9MZAEJzgK5zTHhVJdNFUtwQmv53pWRFOgNwsrWRrAJtuF4FknW78/rztANAVN3KMD4qRtcBpN1u+QsA89INMaYagDn7z7IyuhLcHgC6lVBy/tQCkMfatZDhMApA40SX7US3EioDM7oyB0F3zKkNpwA04OB/ylPzlSmOjO3xsQ5AAeHTP+UAhKWejekBTiMANM9+adhDU+BKVCb1CMAo6JxUuvYqucO1lBEoFp1pfvtUF8oB0DmrhIcXhTlcKxmDagCItkEaTCMArs+/9O3zpU/7eiyQn3fmxzeJALiuB8XbT3n2m01/2R8e5QCozm7hqsxgpAOQ3rUtyhgy7dPJNekAyJlXyTc5VqTYTEHfSki0cz6cOgiAIUmKzTT0rYI8AG60jADfAIS1sRDBeploANwvOhiEXwDKM8tKPZBzWUkQMWW9kPuf8QFVIBoA9dxRvfpArFZoqTFHdFjB3PC53p2deljf9t9/1re8fXBDslW5e3OH45813oVoANLzK+t958rffyMVAGU/xZ7oYAJ5BQzm+PqNxrajSw2z7p6RbVXuLtnh4L3n9e28AlDxvywdI+vSRG+GTkauHukBCdGB4S5A5t7mNtF+rxgA0YfU4BSA8tRX0QtQIHdKewCoyldQOeNpAga90NHF2Wx2Ob29kW05k29/+yB7dDm9Hx59+IfZ6Se77z2PtyaPxFOnn2Qvlzxx6cuL6f0byetEOyQbbySvJ+kCaAZAOgeoGKoRAOtuUrXqjZHPBAMQDj/f8XBn9/STuEU+upgkILqfbX/74Ex8X2wT98V/RxfPCENfTvZMH0V/okiUX+7oYmTv3Zn4k7xOGGcmeZx0Ec2OgmgAJDTOfcVB9u00VyLZU1Xegk5DqLvcfofxP9EERz48+vBJvk3YMt+eWlTcHogmPvoT5yS2euLzG2HyVLSpXCx+Ivlz6WG2Q/Y4ed3mbINqAJpj/+Q8B0FQ3lrdY3RVTUmt5m+XRN//jQ5YtgDX+8wfRGOWUw/Dx/HoJiYxZ7I9Nm66LR6wZOYtAiAe7c5iLmfF8ieyP9kO2ePkPeJupALdAEi9FQTlBNT3H12V/P1U78ysjW9Q15/7v1IFPY/y+PqpbC57fH2WuD0ZAiXbdQOQDuazYs0ApDtwDUDYNL9AGQDb7WlJldIBEwtAuQ0KlHt1EZv6IF32T0ckudkPTlWHQGK3g3T8Xg1A9grlYpUAZDtUA8BnCFShOMPqAFjGqwDM8yW5xP1BfQzU40WFMY8upkOd1O2Z2cX2bOIrrJpPguPdHl8O8+lxtDlyflQmK5Y/kf3JdsgeJ9bnOQkuG4mI/2tzcvUYyJ6gESj8nyzrpu5f7aiisf+pP0ZuTKcCYlAS2zLbni59Ro/P5MugyRxBNPbR1mwwExfPi2VP5H/SHfLH4vXykVMBmwAQthJpcQbIxqGOe1/ZBxl6wuZCWAXZ+goYCZnHC/87EFRi90z3Pu2w+ShEmfo8OBS1ZPH9vaI2x0oexB9+KzY7C4Kk/e4Hnw/DlZH5HwkYAXFWqwEIgnzUP69udKFvHMgGQLnIMq3zT4cgp76pWgEIwOBSfagtM1Y64AmdfkIkxq6PgJqrPgjA4FJ9qK+zZ+e8fhkG9EV1+uonttL818ZAI0u0CbMASPpp0Av1yZMMfhof7Z4eVANQ/TBxFoB8noYE9CSodKE6+8TrP2Ws6LQO2QAkpH1w4v+kVtgFgILW4oy19gDF+Y23zBEAo6X6k45Ciwf5RgKm0oSE2HxA05LHYngZ7zAvRv8T9j+jANSGqJYUrA6dAHT4OHN/8+tGCICZUv1JKiS7a+lNDUMiAGE+o23dpdipuud0/U88AJV5ma33NA0Z6a0BaMx7LQpzCfEApJBoRPmj9LVk4uvL+WYRAPjfFNIIVBcVsk9+5nmwp84FJALQ4W/Y3xz58GZeXlwLCpvHT9eXguxxfH3W/MjymJStHH/BuHep1emYJsL/Rimt7GeXFatX3cPQTgBk9So+8bz6x/77ULXy45le/mwGAP43ThGA2sJPbvfKjMDwuwdN8ueOf/4kLP9i0PjUrRx1QbP6L0d0l1qNtgBg+G+Cxkks9QFhpVOQ7DaCGGUAjr7/3MRXH3vQtLKIwOlSBhc3167uhOHy7tr6vrrUSsD/4yJrYeZNmruNPAJq1q34zqLbAOzGX8N/XAyElnc3w731/ZOt6OaaqtRYwP5GqHgtKH2gpNr02w2AtHId9wDilyTir10eFF3A4vZ+uLy3vby/Ey5u7chKmUHqdfjfCGVnN8YdlYG/ZKhkTaXA7Rzg+Prp5lunAUhvog0XIgwEoHaupR0i/G+IagcgWfdv7OYI8StBLleBJMRDoCvbh+tZALRKdVI3fPE43+6+OnToVknrKIL6maf1uQen1wHkRJPgX35T6gH0SnWhDEDzDjnKurpVUjqKvPEvi6Lkf/toWTmaAJieAzSMU+oA8m+/ELJOiUSYdkwJHURQObmu1dCgewgUNft718KTrQ2zq0CNDqC4V/re1+rvY57KNLJTJaVjoN+42Kfbyodr8QWAMa8D1JcpSPu/to7S2QFY0aRHMwB+D38EJD4Mp/hJDsNvYowgqP+EWtu+o8vRpzG9ojUBdgLJAFBu/zNY+r+4FxTffnGoiAA0AtBYWCG1dlKljzJKR1FuUhCAHCIBCKuX6Ed4eVP00UfpSIJ6G4M5QAyZAARlzL+8MfoFYFQpvZAvOgObAVCe9aDBoNe3Qg95zg5DopDyKXWKvQAonV3zPfEAlIZq8icUDy3SPIO0z6hTrAVA3rSXvJ89ST0ACVKTKa7t2aahjcUZdYTbAEgHPSxqqzMADg+iqoRHg+IMywGQbwuy65ODxDhBEYDK5WxXNP3P6cxaxuocoHmn6hlO9aQazuV37Usq6yg9YHZm7X4fxv4yaKnVr17v4lVNMvIjqBnQpoCwciLLp5oc8msQBzPJt7JGxHYASlPejkkkPyQzGqsHFdT8nt0hdmYlX8cvnnx86stp9wANjxAZN69KUKG62aqGUN4R2NKgQWsAJj8EkvifVO0MIahRf8qqjrIiW288CNXnkCYegHrd0K+oJhKPB4FsANTYd3xhchUkUXwOyY8AVB8OfzX7KANcioFrcRIFfM7ypAPguolcnZrFalkgG2iismRMOQCMqkFOfawTNL+5QPMIGZ35CQeATR2oSF1UTgETa/FQ6QKLAWBfBdX2PqD94dWKKqoiCeDgoxBMqbX32T2i3mK+1GAPmx+GY5uBzPr1q6yKLwZQAAHQxFYA1At09AmCqu+LbW51tVGTR1qrUywFIOAfgPx+sc2hpk6IyyODnQAE7QEgXllS3cQ1A02sBKC0bqh4umhXB+kZF/KtPRjOeAEomab0GUXFnqSXFInKAiYYLQCVcbPmrjSdpjt3oagddDF+ADR8QXtmKVMlnxQQFA86IBGAcqFBesZEJkmRCYLqQQejzwG4m0KqXzYqQgBYMvYqEHdPyE0tXdKC/zmCALSiMjXbi3qgxsgBYG4SjaVbslDXR4SxAzDo5cnQ4iHq/qKfUBqMGwDmVcBZPgKgx5gBYF4DvOUjAHogAEog3wdGDADzCmAuH+gxZgAGvTQR0H56wphXgge9NBG6A4CITIIRA6B+hr51tD7AR/8wQCcjfhhO/Qx562joY3AUQIPxAqB+hrx1dPTRPwqgg4P/UTZ56+jJI34QQI9uKy9url3dCcPl3bX1ff1SbVC3DnF5wCSdVl7e2w731vdPtjbDvWvapThT/wUUMGU6rby4vR8u7+9E/8LFrR3dUowp+R8JmD66PUCcg+huGF6ImHAAAgTAK7qtnAz+D9ezAOiV4kphegTAC7qHQJ9sh4dXd4oeQKsUW6q/KOtQCLBDp5XTpt+TOQA87xu6PcDJ1sb0V4HQ5vtHt5UP19aubBu9DkAWBMA/HFwJJgvs7yFjBYBjY8pPMViZkQLAcQ2RnWBgAAQgg5teYAQEIIWbXmAGzAFC/NChz2AVCP73GgSA43gNGAMBQAC8BgEImU1YgFEQgBAroD6DAMD/XoMA4CMQXoMAoAPwGgQA/vca7wOAFSC/QQDgf6/xPQDwv+d4HgD433f8DgAmAN7jewBcKwCO8ToA8D/wOwCuBQDn+BwAdADA5wDA/8DnAGAFCIQeBwD+BwKPA+BaAaAAAgC8xtMA4GvwIMHPAOB3IEAKAgC8BgEAXuNnALAIClI8DQAACQgA8BoEAHgNAgC8BgEAXoMAAK9BAIDXDAxAyoVZX1yVYCu8ppym8LZTTpzVZF7gWoKIjP4liMgwUIQICIBLGf1LEJFhoAgREACXMvqXICLDQBEiMBmpATAOCADwGgQAeA0CALwGAQBes0IAlnfX1vf1d1/cXFvb7FnqZKtfiZOttSvbnSUgvE1IzxJ6yukyPADiVO1d0959eW87XHyy3a/UXlSBfUo82wwP1/c7SkB4C32F6yknzPAALO/vhItbO7q7H4rT82yzV6nFL3632ed9xK7dyiBcTV/hmsoJMzwAi9v7cSPTg2j3PqVOvvlH1LD0KLG4/XfRH3eUgHAlvYVrKifM8ABEHV/PYz7Z2uhVam9D9Kw9SixuxrXXUQLClfQWrqmcMBZ7gOXdjV6lol1P+jak+xptHoS3vEFP4ZrKCWNtDhC3Fb1K7a0JNvoMpX8fV4PZoTSEt6GnnDCrrAJt9Jn4J7XRs5Roj/qUeLaZtGKtJSC8hb7C9ZQTxtp1gKR12Rx3VTra9eqO4eV0CG9FTzldcCUYeA0CALwGAQBegwAAr0EAgNcgAMBrEADgNQgA8BoEAHgNAgC8BgEwwO6ph+Hx9cuuZYABIAAmeHxG/AMMQQBMcHTpyw+fuBYBhoAAGGF3dsO1BDAIBMAIj2cYAfEEATDBwel/XUcXwBIEwADHkfsPTmMSwBEEwACP33sevn2AQRBHEADgNQgA8BoEAHgNAgC8BgEAXoMAAK9BAIDXIADAaxAA4DUIAPCa/wPmONQzlcQUCQAAAABJRU5ErkJggg==" /><!-- --> We will estimate the PATE while adjusting for the confounding variable <code>x</code>.</p>
+</div>
+<div id="using-the-pate-function-to-estimate-the-pate" class="section level2">
+<h2>Using the <code>pate</code> function to estimate the PATE</h2>
+<p><code>pate</code> is the primary function of the combr package. The following arguments are <em>required</em>:</p>
+<ul>
+<li><code>formula</code>: a formula specifying the conditional mean model. It must include the treatment variable and the confounders. It should <em>not</em> include a variable indicating the data source.</li>
+<li><code>estimator</code>: either <code>&quot;BART&quot;</code> or <code>bayesian_lm</code>. The default is <code>&quot;BART&quot;</code></li>
+<li><code>data</code>: a data frame from which the PATE is estimated. It must include all the variables in the formula, and it must also include a character variable indicating the data sources.</li>
+<li><code>src_var</code>: a character variable indicating which column of the data indicates the data source, e.g., source a, b, or c.</li>
+<li><code>primary_source</code>: a character variable indicating which value of <code>src_var</code> is the primary data source.</li>
+<li><code>trt_var</code>: a character variable indicating which column of the data indicates the treatment variable. This must be included in the formula, and <strong>it must be coded as 1 for treated and 0 for untreated</strong>.</li>
+</ul>
+<p>We will estimate the PATE using a quadratic model for <code>x</code>, allowing for different quadratic relationships between treated and untreated:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">est &lt;-<span class="st"> </span><span class="kw">pate</span>(y <span class="op">~</span><span class="st"> </span>treatment<span class="op">*</span>x <span class="op">+</span><span class="st"> </span>treatment<span class="op">*</span><span class="kw">I</span>(x <span class="op">^</span><span class="st"> </span><span class="dv">2</span>), <span class="dt">data =</span> adapt, 
+  <span class="dt">estimator =</span> <span class="st">&quot;bayesian_lm&quot;</span>, <span class="dt">src_var =</span> <span class="st">&quot;source&quot;</span>, <span class="dt">primary_source =</span> <span class="st">&quot;Primary&quot;</span>, 
+  <span class="dt">trt_var =</span> <span class="st">&quot;treatment&quot;</span>)</code></pre></div>
+<p>The <code>print</code> method shows some information about the posterior:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">est
+<span class="co">#&gt; Population Average Treatment Effect (PATE)</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; PATE Posterior Summary Statistics (Treated vs. Untreated)</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt;         Mean    Std. Dev. Pr(PATE &gt; 0) </span>
+<span class="co">#&gt;    5.4056610    0.9127696    1.0000000</span></code></pre></div>
+<p>And a summary method that gives more info:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(est)
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Population Average Treatment Effect (PATE)</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Call:</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; pate(formula = y ~ treatment * x + treatment * I(x^2), estimator = &quot;bayesian_lm&quot;, </span>
+<span class="co">#&gt;     data = adapt, src_var = &quot;source&quot;, primary_source = &quot;Primary&quot;, </span>
+<span class="co">#&gt;     trt_var = &quot;treatment&quot;)</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; PATE Posterior Summary Statistics (Treated vs. Untreated)</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt;         Mean    Std. Dev. Pr(PATE &gt; 0) </span>
+<span class="co">#&gt;    5.4056610    0.9127696    1.0000000 </span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Exchangeability Matrix (1 == Exchangeable with primary source):</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt;          mem</span>
+<span class="co">#&gt; source    1 2 3 4</span>
+<span class="co">#&gt;   Primary 1 1 1 1</span>
+<span class="co">#&gt;   Supp1   1 0 1 0</span>
+<span class="co">#&gt;   Supp2   1 1 0 0</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; MEM Posterior Probability:</span>
+<span class="co">#&gt;        mem_1        mem_2        mem_3        mem_4 </span>
+<span class="co">#&gt; 9.949498e-01 4.953121e-03 9.711962e-05 5.522330e-16</span></code></pre></div>
+</div>
+<div id="references" class="section level2">
+<h2>References</h2>
+<p>Chipman, H. &amp; McCulloch, R. (2010) BART: Bayesian additive regression trees. <em>Annals of Applied Statistics</em>, <strong>4</strong>(1): 266-298.</p>
+<p>Kaizer, Alexander M., Koopmeiners, Joseph S., Hobbs, Brian P. (2018) Bayesian hierarchical modeling based on multisource exchangeability. <em>Biostatistics</em>, <strong>19</strong>(2): 169-184.</p>
+</div>
+
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
