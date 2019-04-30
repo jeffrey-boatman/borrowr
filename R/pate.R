@@ -117,7 +117,7 @@ pate <- function(formula, estimator = c("BART", "bayesian_lm"), data, src_var, p
 
   # remove src_var from formula if present, add it back as with interactions
   # for all variables.
-  ot <- terms(formula) # original formula terms
+  ot <- terms(formula, data = data) # original formula terms
   fac <- attr(ot, "factors")
   # possible names of source variables in fm:
   pns <- c(src_var, sprintf("as.factor(%s)", src_var))
