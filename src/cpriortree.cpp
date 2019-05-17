@@ -20,6 +20,18 @@
 #include <Rcpp.h>
 using namespace Rcpp;
 
+RcppExport SEXP getRunif() {
+  RNGScope scope;
+  NumericVector x = runif(1);
+  return x;
+}
+
+RcppExport SEXP getRnorm() {
+  RNGScope scope;
+  NumericVector x = rnorm(1, 0, 1);
+  return x;
+}
+
 // [[Rcpp::export]]
 List priortree(NumericVector cut_lens, double alpha = 0.95, double beta = 2) {
   // at minimum, function needs to return:
@@ -48,7 +60,7 @@ List priortree(NumericVector cut_lens, double alpha = 0.95, double beta = 2) {
     double dp = std::floor(log2(nd));
     //depth.push_back(dp);`
     double pt = 1.0 - alpha * pow(1.0 + dp, - beta);
-    NumericVector r1 = runif(1);
+    NumericVector r1 = getRunif();
     //prob_terminal.push_back(pt);
     // if non-terminal, generate children.
     if (r1[0] > pt) { // if not a terminal node...
@@ -57,15 +69,15 @@ List priortree(NumericVector cut_lens, double alpha = 0.95, double beta = 2) {
       node.push_back(nn);
       node.push_back(nn + 1);
       // choose splitting variable:
-      NumericVector r2 = runif(1);
-      NumericVector r3 = runif(1);
+      NumericVector r2 = getRunif();
+      NumericVector r3 = getRunif();
       int wvar = std::floor(r2[0] * p);
       double cl = cut_lens[wvar];
       int wcut = std::floor(r3[0] * cl);
       var.push_back(wvar);
       cut.push_back(wcut);
     } else { // then it's a terminal node
-      NumericVector lv = rnorm(1, 0, 1);
+      NumericVector lv = getRnorm();
       leave.push_back(lv[0]);
       var.push_back(0);
       cut.push_back(0);
