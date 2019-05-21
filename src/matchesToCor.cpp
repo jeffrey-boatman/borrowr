@@ -1,6 +1,6 @@
 /*
  *  combr: combine data sources to estimate population average treatment effect.
- *  Copyright (C) <2019>  <Jeffrey A. Verdoliva Boatman>
+ *  Copyright (C) 2019  Jeffrey A. Verdoliva Boatman
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
