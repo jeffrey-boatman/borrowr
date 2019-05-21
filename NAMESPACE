@@ -1,7 +1,7 @@
 useDynLib('combr')
 importFrom("stats", "lm", "relevel", "rgamma", "rnorm", "runif",
   "model.matrix", "model.response", "terms", "coef",
-  "drop.terms", "na.omit", "nlm", "predict", "qchisq", "sd")
+  "drop.terms", "na.omit", "nlm", "predict", "qchisq", "sd", "quantile")
 importFrom("utils", "capture.output")
 export(pate)
 export(print.pate)
@@ -17,4 +17,6 @@ export(summary.pate)
 # -----------------------------------
 importFrom(Rcpp, sourceCpp)
 importFrom(mvtnorm, dmvt)
-importFrom(BART, bartModelMatrix, wbart)
+#importFrom(BART, bartModelMatrix, wbart)
+importFrom(BART, bartModelMatrix)
+
