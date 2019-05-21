@@ -1,5 +1,5 @@
 #  combr: combine data sources to estimate population average treatment effect.
-#  Copyright (C) <2019>  <Jeffrey A. Verdoliva Boatman>
+#  Copyright (C) 2019  Jeffrey A. Verdoliva Boatman
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -130,7 +130,7 @@ bart <- function(Y, X, estimate, nprior = 100, ntree = 200, ndpost, beta, gf, eb
   # bfit <- BART::wbart(x.train = X, y.train = y_star, ndpost = ndpost,
   #  rm.const = TRUE, ...)
   # bfit <- quiet(BART::wbart)(x.train = X, y.train = y_star, ndpost = ndpost, ...)
-  bfit <- quiet(wbart)(x.train = X, y.train = y_star, ndpost = ndpost, ...)
+  bfit <- quiet(wbart)(x.train = X, y.train = y_star, ndpost = ndpost, gamma = gamma, ...)
   # bfit <- eval(bc)
 
 
