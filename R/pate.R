@@ -107,8 +107,10 @@ pate <- function(formula, estimator = c("BART", "bayesian_lm"), data, src_var, p
     stop(sprintf("src_var '%s' not found in data.", src_var))
   if(!(trt_var %in% names(data)))
     stop(sprintf("trt_var '%s' not found in data.", trt_var))
-  if(!(trt_var %in% all.vars(formula[[3]])))
-    stop(sprintf("The formula must include the trt_var '%s'.", trt_var))
+  if(is.factor(data[, trt_var]))
+    stop(sprintf("trt_var '%s' must be a numeric variable, not a factor.", trt_var))
+  # if(!(trt_var %in% all.vars(formula[[3]])))
+  #   stop(sprintf("The formula must include the trt_var '%s'.", trt_var))
 
   # better not do this...
   # nm <- match(c(src_var, trt_var), names(data))
@@ -127,6 +129,16 @@ pate <- function(formula, estimator = c("BART", "bayesian_lm"), data, src_var, p
     idx <- which(as.logical(fac[pns, ]))
     formula <- formula(drop.terms(ot, idx, keep.response = TRUE))
   }
+
+  # tns <- c(trt_var, sprintf("as.factor(%s)", trt_var))
+  # if (none(tns %in% rownames(fac)))
+  #   stop(sprintf("The formula must include the trt_var '%s'.", trt_var))
+  tns <- sprintf("as.factor(%s)", trt_var)
+  if(tns %in% rownames(fac))
+    stop(sprintf("trt_var '%s' must not be a factor in the formula.", trt_var))
+  if (trt_var %!in% rownames(fac))
+    stop(sprintf("The formula must include the trt_var '%s'.", trt_var))
+
 
   # !!! to do !!! ----
   # - add a check to ensure all variables in formula
