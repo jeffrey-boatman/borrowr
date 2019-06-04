@@ -28,3 +28,7 @@ quiet <- function(f) {
     out
   }
 }
+
+# none <- Negate(any)
+
+`%!in%` <- Negate(`%in%`)
