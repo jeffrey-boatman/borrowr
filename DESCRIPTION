@@ -1,7 +1,7 @@
 Package: combr
 Type: Package
 Title: Combine Data Sources to Estimate Population Average Treatment Effects
-Version: 0.1.0
+Version: 0.0.0.9000
 Author: Jeffrey A. Boatman [aut, cre],
   David M. Vock [aut],
   Joseph S. Koopmeiners [aut]
