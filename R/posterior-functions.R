@@ -40,7 +40,7 @@ sample_posterior <- function(posts, probs) {
 
 posterior_summary <- function(x) {
   c(
-    Mean = mean(x),
+    "Mean Treatment Effect" = mean(x),
     "Std. Dev."   = sd(x),
     "Pr(PATE > 0)" = mean(x > 0)
   )

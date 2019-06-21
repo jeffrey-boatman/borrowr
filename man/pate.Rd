@@ -5,9 +5,7 @@
 \title{Population Average Treatment Effect (PATE)}
 \usage{
 pate(formula, estimator = c("BART", "bayesian_lm"), data, src_var,
-  primary_source, trt_var, subset, na.action, ndpost = 1000, beta = 2,
-  gf = 16, eb = FALSE, prior_calibration = c("none", "empirical"),
-  ...)
+  primary_source, trt_var, ndpost = 1000, ...)
 }
 \arguments{
 \item{formula}{An object of class formula. The left hand side must be the outcome,
@@ -30,20 +28,7 @@ one of the values of \code{src_var}.}
 Must match a column name in the data. Must be coded as numeric values 0 and 1, 0 for
 untreated, 1 for treated.}
 
-\item{subset}{an expression for subsetting the data}
-
-\item{na.action}{how to handle missing values. Will be eliminated as an argument.}
-
 \item{ndpost}{number of draws from the posterior}
-
-\item{beta}{prior parameter on controlling the depth of the trees on the BART prior}
-
-\item{gf}{paramater control the scalar multiplying sigma squared. More details needed here.}
-
-\item{eb}{empirical bayes estimator for gf? Will be eliminated as an argument.}
-
-\item{prior_calibration}{how should the prior on regression parameters be specified for
-bayesian linear model? Will be eliminated as an argument.}
 
 \item{...}{additional arguments passed to BART}
 }
