@@ -28,8 +28,7 @@
 #          assigned to the treatment group 1 and are compliant.
 #@param ndpost The desired number of draws from the posterior distribution of
 #              \out{E(Y<sub>1</sub> - Y<sub>0</sub>)}.
-bayes_lm <- function(Y, X, X0, X1, ndpost,
-  prior_calibration) {
+bayes_lm <- function(Y, X, X0, X1, ndpost) {
 
   X <- as.matrix(X)
   X0 <- as.matrix(X0)
@@ -40,11 +39,7 @@ bayes_lm <- function(Y, X, X0, X1, ndpost,
   flm <- lm(Y ~ X + 0)
 
   # (fairly) vague Normal-Inverse Gamma prior specifications
-  if (prior_calibration == "none") {
-    muBeta <- rep(0, p)
-  } else if (prior_calibration == "empirical") {
-    muBeta <- unname(coef(flm))
-  }
+  muBeta <- unname(coef(flm))
   rho    <- 0.2
   Vbeta  <- 100 * (rho * matrix(1, p, p) + (1 - rho) * diag(p))
 

@@ -15,7 +15,7 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
-make_prior_trees <- function(nprior, ntree, cut_lens, var_probs = NULL, depth = 8, alpha = 0.95, beta, sigma_mu) {
+make_prior_trees <- function(nprior, ntree, cut_lens, var_probs = NULL, depth = 8, alpha = 0.95, beta = 2, sigma_mu) {
 
   p <- length(cut_lens)
   # if(missing(var_probs))
@@ -62,7 +62,7 @@ make_prior_trees <- function(nprior, ntree, cut_lens, var_probs = NULL, depth = 
 
 }
 
-make_one_prior_tree <- function(cut_lens, var_probs, sigma_mu, tiers = 8, alpha = 0.95, beta) {
+make_one_prior_tree <- function(cut_lens, var_probs, sigma_mu, tiers = 8, alpha = 0.95, beta = 2) {
 
   # set.seed(seed)
 

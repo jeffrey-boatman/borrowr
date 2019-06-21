@@ -50,7 +50,7 @@ summary.pate <- function(object, ...) {
   psum <- posterior_summary(post)
   print(psum)
   cat("\nExchangeability Matrix (1 == Exchangeable with primary source):\n\n")
-  print(x$mems + 0)
+  print(x$MEMs + 0)
   cat("\nMEM Posterior Probability:\n")
   print(x$post_probs)
   cat("\n")

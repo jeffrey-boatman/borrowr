@@ -29,7 +29,7 @@
 #          assigned to the treatment group 1 and are compliant.
 #@param ndpost The desired number of draws from the posterior distribution of
 #              \out{E(Y<sub>1</sub> - Y<sub>0</sub>)}.
-bart <- function(Y, X, estimate, nprior = 100, ntree = 200, ndpost, beta, gf, eb,...) {
+bart <- function(Y, X, estimate, nprior = 100, ntree = 200, ndpost,...) {
 
   # cl <- match.call(expand.dots = TRUE)
   #X  <- as.data.frame(X)
@@ -124,7 +124,7 @@ bart <- function(Y, X, estimate, nprior = 100, ntree = 200, ndpost, beta, gf, eb
   naive_sigma <- summary(lm(y_star ~ ., data = X))$sigma
   nu     <- 3
   lambda <- qchisq(0.1, nu) * naive_sigma ^ 2 / nu
-  gamma  <- 1 / (gf * ntree * naive_sigma ^ 2)
+  gamma  <- 1 / (16 * ntree * naive_sigma ^ 2)
 
 
   # bfit <- BART::wbart(x.train = X, y.train = y_star, ndpost = ndpost,
@@ -163,7 +163,6 @@ bart <- function(Y, X, estimate, nprior = 100, ntree = 200, ndpost, beta, gf, eb
     cut_lens  = cut_lens,
     var_probs = var_probs,
     #depth     = depth,
-    beta      = beta,
     sigma_mu  = sigma_mu_prior)
   old_first_line <- paste(nprior, ntree, p, collapse = " ")
   new_first_line <- paste(nprior * ntree, "1", p, collapse = " ")
@@ -190,38 +189,17 @@ bart <- function(Y, X, estimate, nprior = 100, ntree = 200, ndpost, beta, gf, eb
   # compute correlation matrix (a function of the
   # number of shared leaves), then compute the
   # likelihood using that correlation matrix.
-  if (eb) {
-    lfun <- function(lgamma) {
-      gamma <- exp(lgamma)
-      log_marg_likes <- numeric(nprior)
-      m <- ntree
-      for(ip in seq_len(nprior)) {
-        i_temp_fitted <- temp_fitted[pnum == ip, ]
-        R <- matchesToCor(i_temp_fitted)$R
-        V <- nu * lambda * (m * gamma * R + diag(n))
-        log_marg_likes[ip] <- dmvt(y_star, rep(0, n), V / nu, df = nu, log = TRUE)
-      }
-
-      log_marg_like <- max(log_marg_likes) + log(mean(exp(log_marg_likes - max(log_marg_likes))))
-      log_marg_like <- n * log(bb) + log_marg_like # re-scale the log likelihood
-      -log_marg_like
-    }
-    opt <- nlm(lfun, 0)
-    gamma <- exp(opt$estimate)
-    log_marg_like <- -opt$minimum
-  } else {
-    log_marg_likes <- numeric(nprior)
-    m <- ntree
-    for(ip in seq_len(nprior)) {
-      i_temp_fitted <- temp_fitted[pnum == ip, ]
-      R <- matchesToCor(i_temp_fitted)$R
-      V <- nu * lambda * (m * gamma * R + diag(n))
-      log_marg_likes[ip] <- dmvt(y_star, rep(0, n), V / nu, df = nu, log = TRUE)
-    }
-
-    log_marg_like <- max(log_marg_likes) + log(mean(exp(log_marg_likes - max(log_marg_likes))))
-    log_marg_like <- n * log(bb) + log_marg_like # re-scale the log likelihood
+  log_marg_likes <- numeric(nprior)
+  m <- ntree
+  for(ip in seq_len(nprior)) {
+    i_temp_fitted <- temp_fitted[pnum == ip, ]
+    R <- matchesToCor(i_temp_fitted)$R
+    V <- nu * lambda * (m * gamma * R + diag(n))
+    log_marg_likes[ip] <- dmvt(y_star, rep(0, n), V / nu, df = nu, log = TRUE)
   }
+
+  log_marg_like <- max(log_marg_likes) + log(mean(exp(log_marg_likes - max(log_marg_likes))))
+  log_marg_like <- n * log(bb) + log_marg_like # re-scale the log likelihood
 
 
   # m <- match(names(formals(BART::bartModelMatrix)), names(formals(BART::wbart)), 0L)

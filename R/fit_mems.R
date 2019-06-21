@@ -15,7 +15,7 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
-fit_mems <- function(mf, estimator, ndpost, beta, gf, eb, prior_calibration, ...) {
+fit_mems <- function(mf, estimator, ndpost, ...) {
   # if(estimator != "bayesian_lm")
   #   stop("'bayesian_lm' is currently the only estimator implemented.")
 
@@ -42,7 +42,7 @@ fit_mems <- function(mf, estimator, ndpost, beta, gf, eb, prior_calibration, ...
   im <- t(as.matrix(im))
   dimnames(im) <- list(
     source = sl,
-    mem    = seq_len(ncol(im))
+    MEM    = seq_len(ncol(im))
   )
 
   mem_pate_post <- array(dim = c(ndpost, ncol(im)))
@@ -50,7 +50,7 @@ fit_mems <- function(mf, estimator, ndpost, beta, gf, eb, prior_calibration, ...
   EY1 <- array(dim = c(ndpost, ncol(im)))
   dimnames(mem_pate_post) <- list(
     draw = seq_len(ndpost),
-    mem  = seq_len(ncol(im))
+    MEM  = seq_len(ncol(im))
   )
 
   # Y <- matrix(model.response(mf, "numeric"), ncol = 1)
@@ -58,7 +58,7 @@ fit_mems <- function(mf, estimator, ndpost, beta, gf, eb, prior_calibration, ...
   # Y <- matrix(Y, ncol = 1)
 
   log_marg_like <- numeric(ncol(im))
-  names(log_marg_like) <- paste0("mem_", seq_len(ncol(im)))
+  names(log_marg_like) <- paste0("MEM_", seq_len(ncol(im)))
 
   # in the event of bugs, check sorting and splitting
   Xf <- mf
@@ -105,7 +105,6 @@ fit_mems <- function(mf, estimator, ndpost, beta, gf, eb, prior_calibration, ...
       X0       = list(X0),
       X1       = list(X1),
       ndpost   = ndpost,
-      prior_calibration = prior_calibration,
       SIMPLIFY = FALSE)
   } else if (estimator == "BART") {
     #for BART only
@@ -117,9 +116,6 @@ fit_mems <- function(mf, estimator, ndpost, beta, gf, eb, prior_calibration, ...
       #X1       = list(X1),
       estimate = as.list(rep(c(TRUE, FALSE), c(1, nl - 1))),
       ndpost   = ndpost,
-      beta     = beta,
-      gf       = gf,
-      eb       = eb,
       # theta    = 10,
       sparse   = TRUE,
       cont     = FALSE,
@@ -140,8 +136,7 @@ fit_mems <- function(mf, estimator, ndpost, beta, gf, eb, prior_calibration, ...
           X        = tempX,
           X0       = X0,
           X1       = X1,
-          ndpost   = ndpost,
-          prior_calibration = prior_calibration)
+          ndpost   = ndpost)
       } else if (estimator == "BART") {
         tfits[[1]] <- bart(Y = tempY,
           X        = tempX,
@@ -149,9 +144,6 @@ fit_mems <- function(mf, estimator, ndpost, beta, gf, eb, prior_calibration, ...
           #X1       = X1,
           estimate = TRUE,
           ndpost   = ndpost,
-          beta     = beta,
-          gf       = gf,
-          eb       = eb,
           # theta    = 10,
           sparse   = TRUE,
           cont     = FALSE,
@@ -259,7 +251,7 @@ fit_mems <- function(mf, estimator, ndpost, beta, gf, eb, prior_calibration, ...
     pate_post     = pate_post,
     log_marg_like = log_marg_like,
     post_probs    = probs,
-    mems          = im
+    MEMs          = im
   )
 
   out$mem_pate_post <- mem_pate_post

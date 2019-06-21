@@ -57,17 +57,10 @@
 #'Must match a column name in the data.
 #'@param primary_source character variable indicating the primary source. Must match
 #'one of the values of \code{src_var}.
-#'@param subset an expression for subsetting the data
 #'@param trt_var which variable indicates the treatment.
 #'Must match a column name in the data. Must be coded as numeric values 0 and 1, 0 for
 #'untreated, 1 for treated.
-#'@param na.action how to handle missing values. Will be eliminated as an argument.
 #'@param ndpost number of draws from the posterior
-#'@param beta prior parameter on controlling the depth of the trees on the BART prior
-#'@param gf paramater control the scalar multiplying sigma squared. More details needed here.
-#'@param eb empirical bayes estimator for gf? Will be eliminated as an argument.
-#'@param prior_calibration how should the prior on regression parameters be specified for
-#'bayesian linear model? Will be eliminated as an argument.
 #'@param ... additional arguments passed to BART
 #'
 #'@examples
@@ -86,9 +79,8 @@
 #'Kaizer, Alexander M., Koopmeiners, Joseph S., Hobbs, Brian P. (2018) Bayesian
 #' hierarchical modeling based on multisource exchangeability. Biostatistics,
 #' 19(2): 169-184.
-pate <- function(formula, estimator = c("BART", "bayesian_lm"), data, src_var, primary_source, trt_var, subset, na.action,
-  ndpost = 1e3, beta = 2, gf = 16, eb = FALSE,
-  prior_calibration = c("none", "empirical"), ...) {
+pate <- function(formula, estimator = c("BART", "bayesian_lm"), data, src_var, primary_source, trt_var,
+  ndpost = 1e3, ...) {
 
   cl <- match.call()
 
@@ -96,7 +88,6 @@ pate <- function(formula, estimator = c("BART", "bayesian_lm"), data, src_var, p
   force(formula)
   force(data)
   estimator <- match.arg(estimator)
-  prior_calibration <- match.arg(prior_calibration)
   if(!is.character(src_var))
     stop("src_var must be a quoted character variable.")
   if(!is.character(trt_var))
@@ -198,8 +189,7 @@ pate <- function(formula, estimator = c("BART", "bayesian_lm"), data, src_var, p
   # and need to make sure that src_var is found in the formula.
   # need to check that the source variance is acharacter, or that the code
   # works even if it's numeric.,
-  out <- fit_mems(mf = mf, estimator = estimator, ndpost = ndpost,
-    beta = beta, gf = gf, eb = eb, prior_calibration = prior_calibration, ...)
+  out <- fit_mems(mf = mf, estimator = estimator, ndpost = ndpost, ...)
   out$call <- cl
   class(out) <- "pate"
 
