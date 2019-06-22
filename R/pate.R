@@ -22,7 +22,7 @@
 #'a conditional mean model with the treatment variable and confounding variables.
 #'
 #'@details
-#'To address confounding, the combr package estimates the PATE by fiting a
+#'To adjust for confounding, the combr package estimates the PATE by fiting a
 #'model for the conditional mean given treatment and confounders. Currently,
 #'two models are available, a Bayesian linear model with an inverse-gamma prior,
 #'and Bayesian Additive Regression Trees (BART; Chipman & McCulloch, 2010).
@@ -34,13 +34,27 @@
 #'specification of the functional form. If there is no confounding, the right hand
 #'side of the formula needs to include the treatment variable only.
 #'
+#'If \code{formula = "bayesian_lm"}, then the function fits the Bayesian linear model
+#'\deqn{Y = X\beta + \epsilon, \epsilon ~ N(0, \sigma ^ 2).}
+#'The prior on the regression coefficients is normal with mean vector 0 and variance
+#'matrix with diagonal elements equal to 100 and off-diagonal elements equal to 20.
+#'The prior on \eqn{\epsilon} is a re-parameterized gamma distribution with a mean of
+#'\eqn{\hat{\sigma ^ 2}} and a variance of \eqn{2\hat{sigma ^ 2} / n}, where \eqn{hat{sigma ^ 2}}
+#'is the variance from a fitted (frequentist) least squares model.
+#'
+#'If \code{formula = "BART"}, the function fits the Bayesian Additive Regression Trees
+#'model, but with a modified prior on the terminal nodes. The prior on each terminal node
+#'is
+#'\deqn{N(0, \gamma\sigma ^ 2).} The package uses the default value
+#'\deqn{\gamma = 1 / (16 * m * \hat{sigma ^ 2})} where $m$ is the number of trees and \eqn{\hat{sigma ^ 2}} is the variance of \eqn{Y}.
+#'
 #'Borrowing between data sources is done with
 #'Multisource Exchangeability Models
 #'(MEMs; Kaizer et al., 2018) . MEMs borrow by assuming that each supplementary data source
 #'is either "exchangable", or not, with the primary data source. Two data sources
 #'are considered exchangeable if their model parameters are equal. Each data source
-#'can be exchangeable with the primary data, or not, so if there are $r$ data
-#'sources, there are $2 ^ r$ possible configurations regarding the exchangeability
+#'can be exchangeable with the primary data, or not, so if there are \eqn{r} data
+#'sources, there are \eqn{2 ^ r} possible configurations regarding the exchangeability
 #'assumptions. Each of these configurations corresponds to a single MEM.
 #'The parameters for each MEM are estimated, and we compute a posterior probability
 #'for each. The posterior density of the PATE is a weighted posterior across all
