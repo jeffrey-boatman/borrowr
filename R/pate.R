@@ -22,7 +22,7 @@
 #'a conditional mean model with the treatment variable and confounding variables.
 #'
 #'@details
-#'To adjust for confounding, the combr package estimates the PATE by fiting a
+#'To adjust for confounding, the combr package estimates the PATE by fitting a
 #'model for the conditional mean given treatment and confounders. Currently,
 #'two models are available, a Bayesian linear model with an inverse-gamma prior,
 #'and Bayesian Additive Regression Trees (BART; Chipman & McCulloch, 2010).
@@ -51,7 +51,7 @@
 #'Borrowing between data sources is done with
 #'Multisource Exchangeability Models
 #'(MEMs; Kaizer et al., 2018) . MEMs borrow by assuming that each supplementary data source
-#'is either "exchangable", or not, with the primary data source. Two data sources
+#'is either "exchangeable", or not, with the primary data source. Two data sources
 #'are considered exchangeable if their model parameters are equal. Each data source
 #'can be exchangeable with the primary data, or not, so if there are \eqn{r} data
 #'sources, there are \eqn{2 ^ r} possible configurations regarding the exchangeability

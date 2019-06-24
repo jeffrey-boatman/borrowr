@@ -35,7 +35,7 @@ RcppExport SEXP cwbart(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEX
 static const R_CallMethodDef CallEntries[] = {
     {"_combr_priortree", (DL_FUNC) &_combr_priortree, 3},
     {"_combr_matchesToCor", (DL_FUNC) &_combr_matchesToCor, 1},
-    {"cwbart",              (DL_FUNC) &cwbart,              32},
+    {"cwbart", (DL_FUNC) &cwbart, 32},
     {NULL, NULL, 0}
 };
 
