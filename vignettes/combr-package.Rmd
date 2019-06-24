@@ -1,12 +1,10 @@
 ---
 title: "Estimating Population Average Treatment Effects with the combr Package"
-author: "Jeffrey A. Boatman"
-date: "2019-04-25"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Estimating Population Average Treatment Effects with the combr Package}
   %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+  \usepackage[utf8]{inputenc}
 ---
 
 ```{r setup, include = FALSE}
