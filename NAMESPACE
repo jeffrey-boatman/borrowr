@@ -3,6 +3,8 @@ importFrom("stats", "lm", "relevel", "rgamma", "rnorm", "runif",
   "model.matrix", "model.response", "terms", "coef",
   "drop.terms", "na.omit", "nlm", "predict", "qchisq", "sd", "quantile")
 importFrom("utils", "capture.output")
+S3method(print, pate)
+S3method(summary, pate)
 export(pate)
 export(print.pate)
 export(summary.pate)
