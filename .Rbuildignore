@@ -2,3 +2,4 @@
 ^\.Rproj\.user$
 make-vignette-data.R
 cran-comments.md
+^CRAN-RELEASE$
