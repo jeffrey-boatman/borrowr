@@ -2,10 +2,10 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 priortree <- function(cut_lens, alpha = 0.95, beta = 2) {
-    .Call('_combr_priortree', PACKAGE = 'combr', cut_lens, alpha, beta)
+    .Call('_borrowr_priortree', PACKAGE = 'borrowr', cut_lens, alpha, beta)
 }
 
 matchesToCor <- function(x) {
-    .Call('_combr_matchesToCor', PACKAGE = 'combr', x)
+    .Call('_borrowr_matchesToCor', PACKAGE = 'borrowr', x)
 }
 

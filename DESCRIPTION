@@ -1,6 +1,6 @@
-Package: combr
+Package: borrowr
 Type: Package
-Title: Combine Data Sources to Estimate Population Average Treatment Effects
+Title: Estimate Population Average Treatment Effects With Borrowing Between Data Sources
 Version: 0.1.0
 Author: Jeffrey A. Boatman [aut, cre],
   David M. Vock [aut],

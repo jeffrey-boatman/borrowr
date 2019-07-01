@@ -1,4 +1,4 @@
-useDynLib('combr')
+useDynLib('borrowr')
 
 importFrom("stats", "lm", "relevel", "rgamma", "rnorm", "runif",
   "model.matrix", "model.response", "terms", "coef",

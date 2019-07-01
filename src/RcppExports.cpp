@@ -7,7 +7,7 @@ using namespace Rcpp;
 
 // priortree
 List priortree(NumericVector cut_lens, double alpha, double beta);
-RcppExport SEXP _combr_priortree(SEXP cut_lensSEXP, SEXP alphaSEXP, SEXP betaSEXP) {
+RcppExport SEXP _borrowr_priortree(SEXP cut_lensSEXP, SEXP alphaSEXP, SEXP betaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -20,7 +20,7 @@ END_RCPP
 }
 // matchesToCor
 List matchesToCor(NumericMatrix x);
-RcppExport SEXP _combr_matchesToCor(SEXP xSEXP) {
+RcppExport SEXP _borrowr_matchesToCor(SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -33,13 +33,13 @@ END_RCPP
 RcppExport SEXP cwbart(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_combr_priortree", (DL_FUNC) &_combr_priortree, 3},
-    {"_combr_matchesToCor", (DL_FUNC) &_combr_matchesToCor, 1},
+    {"_borrowr_priortree", (DL_FUNC) &_borrowr_priortree, 3},
+    {"_borrowr_matchesToCor", (DL_FUNC) &_borrowr_matchesToCor, 1},
     {"cwbart", (DL_FUNC) &cwbart, 32},
     {NULL, NULL, 0}
 };
 
-RcppExport void R_init_combr(DllInfo *dll) {
+RcppExport void R_init_borrowr(DllInfo *dll) {
     R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
     R_useDynamicSymbols(dll, FALSE);
 }
