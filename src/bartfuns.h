@@ -37,7 +37,7 @@ double getpb(tree& t, xinfo& xi, pinfo& pi, tree::npv& goodbots);
 void getsuff(tree& x, tree::tree_p nx, size_t v, size_t c, xinfo& xi, dinfo& di, size_t& nl, double& syl, size_t& nr, double& syr);
 //--------------------------------------------------
 //lh, replacement for lil that only depends on sum y.
-double lh(size_t n, double sy, double sigma, double tau);
+double lh(size_t n, double sy, double sigma, double gamma);
 //--------------------------------------------------
 //get prob a node grows, 0 if no good vars, else a/(1+d)^b
 double pgrow(tree::tree_p n, xinfo& xi, pinfo& pi);

@@ -45,9 +45,9 @@ bool bd(tree& x, xinfo& xi, dinfo& di, pinfo& pi, double sigma,
       double alpha=0.0, lalpha=0.0;
       double lhl, lhr, lht;
       if((nl>=5) && (nr>=5)) { //cludge?
-         lhl = lh(nl,syl,sigma,pi.tau);
-         lhr = lh(nr,syr,sigma,pi.tau);
-         lht = lh(nl+nr,syl+syr,sigma,pi.tau);
+         lhl = lh(nl,syl,sigma,pi.gamma);
+         lhr = lh(nr,syr,sigma,pi.gamma);
+         lht = lh(nl+nr,syl+syr,sigma,pi.gamma);
 
          alpha=1.0;
          lalpha = log(pr) + (lhl+lhr-lht) + log(sigma);
@@ -84,9 +84,9 @@ bool bd(tree& x, xinfo& xi, dinfo& di, pinfo& pi, double sigma,
       //--------------------------------------------------
       //compute alpha
       double lhl, lhr, lht;
-      lhl = lh(nl,syl,sigma,pi.tau);
-      lhr = lh(nr,syr,sigma,pi.tau);
-      lht = lh(nl+nr,syl+syr,sigma,pi.tau);
+      lhl = lh(nl,syl,sigma,pi.gamma);
+      lhr = lh(nr,syr,sigma,pi.gamma);
+      lht = lh(nl+nr,syl+syr,sigma,pi.gamma);
 
       double lalpha = log(pr) + (lht - lhl - lhr) - log(sigma);
       lalpha = std::min(0.0,lalpha);

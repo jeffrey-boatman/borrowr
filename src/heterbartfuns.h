@@ -29,7 +29,7 @@
 // theirs
 // double heterlh(double b, double M, double tau);
 //mine
-double heterlh(double b, double M, double sigma, double tau);
+double heterlh(double b, double M, double sigma, double gamma);
 //--------------------------------------------------
 //compute b and M  for left and right give bot and v,c
 void hetergetsuff(tree& x, tree::tree_p nx, size_t v, size_t c, xinfo& xi, dinfo& di, size_t& nl, double& bl, double& Ml, size_t& nr, double& br, double& Mr, double *sigma);

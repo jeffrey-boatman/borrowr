@@ -92,10 +92,10 @@ void getsuff(tree& x, tree::tree_p nx, size_t v, size_t c, xinfo& xi, dinfo& di,
 
 }
 //lh, replacement for lil that only depends on sum y.
-double lh(size_t n, double sy, double sigma, double tau)
+double lh(size_t n, double sy, double sigma, double gamma)
 {
    double s2 = sigma*sigma;
-   double t2 = tau*tau;
+   double t2 = gamma*sigma*sigma;
    double k = n*t2+s2;
    return -.5*log(k) + ((t2*sy*sy)/(2.0*s2*k));
 }
