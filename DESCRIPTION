@@ -6,7 +6,13 @@ Author: Jeffrey A. Boatman [aut, cre],
   David M. Vock [aut],
   Joseph S. Koopmeiners [aut]
 Maintainer: Jeffrey A. Boatman <boat0036@umn.edu>
-Description: Combine Data Sources to Estimate Population Average Treatment Effects.
+Description: Estimate population average treatment effects from a primary data source 
+  with borrowing from supplemental sources. Causal estimation is done with either a 
+  Bayesian linear model or with Bayesian Additive Regression Trees (BART) to adjust 
+  for confounding. Borrowing is done with Multisource Exchangeability Models. For 
+  information on BART, see Chipman, George, & McCulloch (2010) <doi:10.1214/09-AOAS285>. 
+  For information on Multisource Exchangeability Models, see Kaizer, Koopmeiners, & 
+  Hobbs (2018) <doi10.1093/biostatistics/kxx031>.
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true

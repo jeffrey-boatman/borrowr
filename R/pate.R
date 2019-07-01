@@ -84,7 +84,7 @@
 #'  estimator = "bayesian_lm", src_var = "source", primary_source = "Primary",
 #'  trt_var = "treatment")
 #'
-#'est
+#'summary(est)
 #'
 #'@references
 #'Chipman, H. & McCulloch, R. (2010) BART: Bayesian additive regression trees. Annals
