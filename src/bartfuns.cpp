@@ -167,11 +167,8 @@ void drmu(tree& t, xinfo& xi, dinfo& di, pinfo& pi, double sigma, rn& gen)
    std::vector<double> syv;
    allsuff(t,xi,di,bnv,nv,syv);
 
-   //mine
-   printf("Calling settheta\n");
-   //end mine
    for(tree::npv::size_type i=0;i!=bnv.size();i++)
-      bnv[i]->settheta(drawnodemu(nv[i],syv[i],pi.tau,sigma,gen));
+      bnv[i]->settheta(drawnodemu(nv[i],syv[i],pi.gamma,sigma,gen));
 }
 //--------------------------------------------------
 //bprop: function to generate birth proposal
@@ -346,11 +343,11 @@ void dprop(tree& x, xinfo& xi, pinfo& pi,tree::npv& goodbots, double& PBx, tree:
 }
 //--------------------------------------------------
 //draw one mu from post
-double drawnodemu(size_t n, double sy, double tau, double sigma, rn& gen)
+double drawnodemu(size_t n, double sy, double gamma, double sigma, rn& gen)
 {
    double s2 = sigma*sigma;
    double b = n/s2;
-   double a = 1.0/(tau*tau);
+   double a = 1.0/(gamma*sigma*sigma);
    printf("n, sy: %u, %f", n, sy);
    return (sy/s2)/(a+b) + gen.normal()/sqrt(a+b);
 }

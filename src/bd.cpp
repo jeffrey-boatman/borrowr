@@ -60,8 +60,8 @@ bool bd(tree& x, xinfo& xi, dinfo& di, pinfo& pi, double sigma,
       double uu = gen.uniform();
       bool dostep = (alpha > 0) && (log(uu) < lalpha);
       if(dostep) {
-         mul = drawnodemu(nl,syl,pi.tau,sigma,gen);
-         mur = drawnodemu(nr,syr,pi.tau,sigma,gen);
+         mul = drawnodemu(nl,syl,pi.gamma,sigma,gen);
+         mur = drawnodemu(nr,syr,pi.gamma,sigma,gen);
          x.birthp(nx,v,c,mul,mur);
 	 nv[v]++;
          return true;
@@ -95,7 +95,7 @@ bool bd(tree& x, xinfo& xi, dinfo& di, pinfo& pi, double sigma,
       //try metrop
       double mu;
       if(log(gen.uniform()) < lalpha) {
-         mu = drawnodemu(nl+nr,syl+syr,pi.tau,sigma,gen);
+         mu = drawnodemu(nl+nr,syl+syr,pi.gamma,sigma,gen);
 	 nv[nx->getv()]--;
          x.deathp(nx,mu);
          return true;
