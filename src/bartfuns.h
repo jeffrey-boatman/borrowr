@@ -58,7 +58,7 @@ void bprop(tree& x, xinfo& xi, pinfo& pi, tree::npv& goodbots, double& PBx, tree
 void dprop(tree& x, xinfo& xi, pinfo& pi, tree::npv& goodbots, double& PBx, tree::tree_p& nx, double& pr, rn& gen);
 //--------------------------------------------------
 //draw one mu from post
-double drawnodemu(size_t n, double sy, double tau, double sigma, rn& gen);
+double drawnodemu(size_t n, double sy, double gamma, double sigma, rn& gen);
 //--------------------------------------------------
 //draw variable splitting probabilities from Dirichlet (Linero, 2018)
 void draw_s(std::vector<size_t>& nv, std::vector<double>& lpv, double& theta, rn& gen);
