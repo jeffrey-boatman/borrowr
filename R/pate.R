@@ -194,6 +194,9 @@ pate <- function(formula, estimator = c("BART", "bayesian_lm"), data, src_var, p
   } else {
     mf[, src_var] <- factor(mf[, src_var], levels = c(srcs[sm], srcs[-sm]))
   }
+
+  mf[, src_var] <- droplevels(mf[, src_var])
+
   attr(mf, "formula") <- formula
   attr(mf, "src_var") <- src_var
   attr(mf, "trt_var") <- trt_var
