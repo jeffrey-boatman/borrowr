@@ -83,7 +83,7 @@ est <- pate(y ~ treatment*x + treatment*I(x ^ 2), data = adapt,
  estimator = "bayesian_lm", src_var = "source", primary_source = "Primary",
  trt_var = "treatment")
 
-est
+summary(est)
 
 }
 \references{

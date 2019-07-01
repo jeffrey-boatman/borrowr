@@ -15,12 +15,6 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
-#'Printing Population Average Treatment Effects Object
-#'
-#'\code{print} method for class "\code{pate}".
-#'
-#'@param x an object of class "\code{pate}"
-#'@param ... further arguments passed to or from other methods.
 print.pate <- function(x, ...) {
   cat("Population Average Treatment Effect (PATE)\n")
   cat("\nPATE Posterior Summary Statistics (Treated vs. Untreated)\n\n")
@@ -33,31 +27,32 @@ print.pate <- function(x, ...) {
   invisible(out)
 }
 
-#'Summary of Population Average Treatment Effect
-#'
-#'\code{summary} for class "\code{pate}".
-#'
-#'@param object an object of class "\code{pate}".
-#'@param ... further arguments passed to or from other methods/
 summary.pate <- function(object, ...) {
   x <- object
+  out <- list()
+  out$call <- x$call
+  out$posterior_summary <- posterior_summary(x$post)
+  out$mems <- x$MEMs + 0
+  out$post_probs <- x$post_probs
+  class(out) <- "summary.pate"
+  out
+}
+
+print.summary.pate <- function(x, ...) {
   cat("\nPopulation Average Treatment Effect (PATE)\n")
   cat("\nCall:\n\n")
   print(x$call)
   cat("\nPATE Posterior Summary Statistics (Treated vs. Untreated)\n\n")
   # posterior statistics
   post <- x$pate_post
-  psum <- posterior_summary(post)
+  psum <- x$posterior_summary
   print(psum)
+
   cat("\nExchangeability Matrix (1 == Exchangeable with primary source):\n\n")
-  print(x$MEMs + 0)
+  print(x$mems)
   cat("\nMEM Posterior Probability:\n")
   print(x$post_probs)
   cat("\n")
-  out <- list()
-  out$call <- x$call
-  out$posterior_summary <- psum
-  out$mems <- x$mems + 0
-  out$post_probs <- x$post_probs
-  invisible(out)
+  invisible(x)
 }
+
