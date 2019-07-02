@@ -1,4 +1,4 @@
-#  combr: combine data sources to estimate population average treatment effect.
+#  borrowr: estimate population average treatment effects with borrowing between data sources.
 #  Copyright (C) 2019  Jeffrey A. Verdoliva Boatman
 #  This is a modified version of the code from the BART R package.
 #
