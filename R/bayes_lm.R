@@ -1,4 +1,4 @@
-#  combr: combine data sources to estimate population average treatment effect.
+#  borrowr: estimate population average treatment effects with borrowing between data sources.
 #  Copyright (C) 2019  Jeffrey A. Verdoliva Boatman
 #
 #  This program is free software: you can redistribute it and/or modify
