@@ -46,11 +46,6 @@ bool heterbd(tree& x, xinfo& xi, dinfo& di, pinfo& pi, double *sigma,
       double alpha=0.0, lalpha=0.0;
       double lhl, lhr, lht;
       if((nl>=5) && (nr>=5)) { //cludge?
-        //theirs
-         // lhl = heterlh(bl,Ml,pi.tau);
-         // lhr = heterlh(br,Mr,pi.tau);
-         // lht = heterlh(bl+br,Ml+Mr,pi.tau);
-         //mine
          lhl = heterlh(bl,Ml,sigma[0], pi.gamma);
          lhr = heterlh(br,Mr,sigma[0], pi.gamma);
          lht = heterlh(bl+br,Ml+Mr,sigma[0], pi.gamma);
@@ -67,10 +62,6 @@ bool heterbd(tree& x, xinfo& xi, dinfo& di, pinfo& pi, double *sigma,
       double uu = gen.uniform();
       bool dostep = (alpha > 0) && (log(uu) < lalpha);
       if(dostep) {
-         // theirs
-         // mul = heterdrawnodemu(bl,Ml,pi.tau,gen);
-         // mur = heterdrawnodemu(br,Mr,pi.tau,gen);
-         //mine
          mul = heterdrawnodemu(bl,Ml,sigma[0],pi.gamma,gen);
          mur = heterdrawnodemu(br,Mr,sigma[0],pi.gamma,gen);
          x.birthp(nx,v,c,mul,mur);
@@ -95,11 +86,6 @@ bool heterbd(tree& x, xinfo& xi, dinfo& di, pinfo& pi, double *sigma,
       //--------------------------------------------------
       //compute alpha
       double lhl, lhr, lht;
-      // theirs
-      // lhl = heterlh(bl,Ml,pi.tau);
-      // lhr = heterlh(br,Mr,pi.tau);
-      // lht = heterlh(bl+br,Ml+Mr,pi.tau);
-      //mine
       lhl = heterlh(bl,Ml,sigma[0], pi.gamma);
       lhr = heterlh(br,Mr,sigma[0], pi.gamma);
       lht = heterlh(bl+br,Ml+Mr,sigma[0], pi.gamma);
@@ -113,9 +99,6 @@ bool heterbd(tree& x, xinfo& xi, dinfo& di, pinfo& pi, double *sigma,
       //double a,b,s2,yb;
       double mu;
       if(log(gen.uniform()) < lalpha) {
-        //theirs
-         // mu = heterdrawnodemu(bl+br,Ml+Mr,pi.tau,gen);
-        //mine
         mu = heterdrawnodemu(bl+br,Ml+Mr,sigma[0],pi.gamma,gen);
 	 nv[nx->getv()]--;
          x.deathp(nx,mu);

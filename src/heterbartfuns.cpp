@@ -21,13 +21,6 @@
 
 //--------------------------------------------------
 //heterlh, replacement for lil that only depends on sum y.
-// theirs
-// double heterlh(double b, double M, double tau) {
-//    double t2 =tau*tau;
-//    double k = b*t2+1;
-//    return -.5*log(k)+.5*M*M*t2/k;
-// }
-//mine
 double heterlh(double b, double M, double sigma, double gamma) {
    //mine
    //printf("********  Calling heterlh ********\n");
@@ -90,15 +83,6 @@ void hetergetsuff(tree& x, tree::tree_p l, tree::tree_p r, xinfo& xi, dinfo& di,
 }
 //--------------------------------------------------
 //draw one mu from post
-//theirs
-// double heterdrawnodemu(double b, double M, double tau, rn& gen)
-// {
-//   double muhat = M/b;
-//   double a = 1.0/(tau*tau);
-//   //printf("M, b, Mdivb, %f, %f, %f\n", M, b, muhat);
-//   return (b*muhat)/(a+b) + gen.normal()/sqrt(a+b);
-// }
-//mine
 double heterdrawnodemu(double b, double M, double sigma, double gamma, rn& gen)
 {
    double muhat = M/b;
@@ -148,16 +132,7 @@ void heterdrmu(tree& t, xinfo& xi, dinfo& di, pinfo& pi, double *sigma, rn& gen)
    std::vector<double> Mv;
    heterallsuff(t,xi,di,bnv,bv,Mv,sigma);
    for(tree::npv::size_type i=0;i!=bnv.size();i++) {
-     //theirs
-     //bnv[i]->settheta(heterdrawnodemu(bv[i],Mv[i],pi.tau,gen));
-    //mine
     bnv[i]->settheta(heterdrawnodemu(bv[i],Mv[i],sigma[i],pi.gamma,gen));
-    //printf("sigma from heterdrmu: %f\n", sigma[0]);
-        //for(tree::npv::size_type i=0;i!=bnv.size();i++) {
-          //double foo = heterdrawnodemu(bv[i],Mv[i],pi.tau,gen);
-          //bnv[i]->settheta(foo);
-          //printf("%f\n", foo);
-        //}
    }
    //mine
    //printf("******************************************************\n");

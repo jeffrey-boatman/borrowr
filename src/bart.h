@@ -50,10 +50,6 @@ public:
    void setdata(size_t p, size_t n, double *x, double *y, size_t nc=100);
    void setdata(size_t p, size_t n, double *x, double *y, int* nc);
    void setpi(pinfo& pi) {this->pi = pi;}
-   // theirs
-   //void setprior(double alpha, double beta, double tau)
-      //{pi.alpha=alpha; pi.mybeta = beta; pi.tau=tau;}
-   // mine
    void setprior(double alpha, double beta, double tau, double gamma)
      {pi.alpha=alpha; pi.mybeta = beta; pi.tau=tau; pi.gamma = gamma;}
    void setdart(double _a, double _b, double _rho, bool _aug, bool _dart,
