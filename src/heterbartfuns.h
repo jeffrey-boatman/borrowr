@@ -26,9 +26,6 @@
 
 //--------------------------------------------------
 //heterlh, replacement for lil that only depends on sum y.
-// theirs
-// double heterlh(double b, double M, double tau);
-//mine
 double heterlh(double b, double M, double sigma, double gamma);
 //--------------------------------------------------
 //compute b and M  for left and right give bot and v,c
@@ -38,7 +35,6 @@ void hetergetsuff(tree& x, tree::tree_p nx, size_t v, size_t c, xinfo& xi, dinfo
 void hetergetsuff(tree& x, tree::tree_p l, tree::tree_p r, xinfo& xi, dinfo& di, double& bl, double& Ml, double& br, double& Mr, double *sigma);
 //--------------------------------------------------
 //draw one mu from post
-// double heterdrawnodemu(double b, double M, double tau, rn& gen);
 double heterdrawnodemu(double b, double M, double sigma, double gamma, rn& gen);
 //--------------------------------------------------
 //get sufficients stats for all bottom nodes, this way just loop through all the data once.

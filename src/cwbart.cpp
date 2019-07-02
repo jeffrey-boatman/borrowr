@@ -236,10 +236,8 @@ void cwbart(
    printf("*****Number of Trees: %zu\n",m);
    printf("*****Number of Cut Points: %d ... %d\n", numcut[0], numcut[p-1]);
    printf("*****burn and ndpost: %zu, %zu\n",burn,nd);
-   //printf("*****Prior:beta,alpha,tau,nu,lambda: %lf,%lf,%lf,%lf,%lf\n",
-                   //mybeta,alpha,tau,nu,lambda);
-   printf("*****Prior:beta,alpha,tau,nu,lambda, gamma: %lf,%lf,%lf,%lf,%lf,%.3f\n",
-                   mybeta,alpha,tau,nu,lambda,gamma);
+   printf("*****Prior:beta,alpha,nu,lambda, gamma: %lf,%lf,%lf,%lf,%.3f\n",
+                   mybeta,alpha,nu,lambda,gamma);
    printf("*****sigma: %lf\n",sigma);
    printf("*****w (weights): %lf ... %lf\n",iw[0],iw[n-1]);
    cout << "*****Dirichlet:sparse,theta,omega,a,b,rho,augment: "
