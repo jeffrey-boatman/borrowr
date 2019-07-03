@@ -1,6 +1,6 @@
 Package: borrowr
 Type: Package
-Title: Estimate Population Average Treatment Effects With Borrowing Between Data Sources
+Title: Estimate Causal Effects with Borrowing Between Data Sources
 Version: 0.1.0
 Author: Jeffrey A. Boatman [aut, cre],
   David M. Vock [aut],
