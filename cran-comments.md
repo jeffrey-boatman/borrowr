@@ -10,7 +10,7 @@ There was 1 NOTE:
 * checking CRAN incoming feasibility ... NOTE
   Maintainer: 'Jeffrey A. Boatman <boat0036@umn.edu>'
   
-  This is the first submission for this package (It is a resubmission of a first submission). Please note that I originally submitted this package under the name combr, but I have decided to name it borrowr since this is a better description of the package. I apologize for any inconvenience this may cause.
+  This is the first submission for this package (It is a resubmission of a first submission). Please note that I originally submitted this package under the name combr, but I have decided to name it borrowr since this is a better description of the package. I apologize for any inconvenience this may cause. I have included my replies to the original submission below.
   
 ## Replies to CRAN on submission:
 

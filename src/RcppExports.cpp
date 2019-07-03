@@ -30,12 +30,12 @@ BEGIN_RCPP
 END_RCPP
 }
 
-RcppExport SEXP cwbart(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+RcppExport SEXP cwbart(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 
 static const R_CallMethodDef CallEntries[] = {
     {"_borrowr_priortree", (DL_FUNC) &_borrowr_priortree, 3},
     {"_borrowr_matchesToCor", (DL_FUNC) &_borrowr_matchesToCor, 1},
-    {"cwbart", (DL_FUNC) &cwbart, 32},
+    {"cwbart", (DL_FUNC) &cwbart, 31},
     {NULL, NULL, 0}
 };
 

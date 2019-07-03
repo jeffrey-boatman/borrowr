@@ -33,19 +33,25 @@ public:
 class pinfo
 {
 public:
-   pinfo(): pbd(1.0),pb(.5),alpha(.95),mybeta(2.0),tau(1.0), gamma(1.0) {}
+   // pinfo(): pbd(1.0),pb(.5),alpha(.95),mybeta(2.0),tau(1.0), gamma(1.0) {}
+   pinfo(): pbd(1.0),pb(.5),alpha(.95),mybeta(2.0),gamma(1.0) {}
 //mcmc info
    double pbd; //prob of birth/death
    double pb;  //prob of birth
 //prior info
    double alpha;
    double mybeta;
-   double tau;
+   // double tau;
    double gamma;
+   //void pr() {
+      //cout << "pbd,pb: " << pbd << ", " << pb << std::endl;
+      //cout << "alpha,beta,tau: " << alpha <<
+      //       ", " << mybeta << ", " << tau << std::endl;
+   //}
    void pr() {
       cout << "pbd,pb: " << pbd << ", " << pb << std::endl;
-      cout << "alpha,beta,tau: " << alpha <<
-             ", " << mybeta << ", " << tau << std::endl;
+      cout << "alpha,beta: " << alpha <<
+             ", " << mybeta <<  std::endl;
    }
 };
 
