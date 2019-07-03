@@ -19,7 +19,7 @@ wbart <- function (x.train, y.train, x.test = matrix(0, 0, 0), sparse = FALSE,
     theta = 0, omega = 1, a = 0.5, b = 1, augment = FALSE, rho = NULL,
     xinfo = matrix(0, 0, 0), usequants = FALSE, cont = FALSE,
     rm.const = TRUE, sigest = NA, sigdf = 3, sigquant = 0.9,
-    k = 2, power = 2, base = 0.95, sigmaf = NA, lambda = NA, gamma = NA,
+    k = 2, power = 2, base = 0.95, lambda = NA, gamma = NA,
     fmean = mean(y.train), w = rep(1, length(y.train)), ntree = 200L,
     numcut = 100L, ndpost = 1000L, nskip = 100L, keepevery = 1L,
     nkeeptrain = ndpost, nkeeptest = ndpost, nkeeptestmean = ndpost,
@@ -90,19 +90,19 @@ wbart <- function (x.train, y.train, x.test = matrix(0, 0, 0), sparse = FALSE,
     else {
         sigest = sqrt(lambda)
     }
-    if (is.na(sigmaf)) {
-        tau = (max(y.train) - min(y.train))/(2 * k * sqrt(ntree))
-    }
-    else {
-        tau = sigmaf/sqrt(ntree)
-    }
+    # if (is.na(sigmaf)) {
+    #     tau = (max(y.train) - min(y.train))/(2 * k * sqrt(ntree))
+    # }
+    # else {
+    #     tau = sigmaf/sqrt(ntree)
+    # }
     # mine
     if(is.na(gamma)) gamma <- 1 / ntree
     # end mine
     ptm <- proc.time()
     res = .Call("cwbart", n, p, np, x.train, y.train, x.test,
         ntree, numcut, ndpost * keepevery, nskip, power, base,
-        tau, nu, lambda, gamma, sigest, w, sparse, theta, omega, grp,
+        nu, lambda, gamma, sigest, w, sparse, theta, omega, grp,
         a, b, rho, augment, nkeeptrain, nkeeptest, nkeeptestmean,
         nkeeptreedraws, printevery, xinfo)
     res$proc.time <- proc.time() - ptm

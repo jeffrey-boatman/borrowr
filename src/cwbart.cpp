@@ -43,7 +43,7 @@ RcppExport SEXP cwbart(
    SEXP _iburn,		//number of burn-in draws skipped
    SEXP _ipower,
    SEXP _ibase,
-   SEXP _itau,
+   // SEXP _itau,
    SEXP _inu,
    SEXP _ilambda,
    //mine
@@ -88,7 +88,7 @@ RcppExport SEXP cwbart(
    size_t burn = Rcpp::as<int>(_iburn);
    double mybeta = Rcpp::as<double>(_ipower);
    double alpha = Rcpp::as<double>(_ibase);
-   double tau = Rcpp::as<double>(_itau);
+   //double tau = Rcpp::as<double>(_itau);
    double nu = Rcpp::as<double>(_inu);
    double lambda = Rcpp::as<double>(_ilambda);
    //mine
@@ -162,7 +162,7 @@ void cwbart(
    size_t burn,		//number of burn-in draws skipped
    double mybeta,
    double alpha,
-   double tau,
+   //double tau,
    double nu,
    double lambda,
    //mine
@@ -250,7 +250,8 @@ void cwbart(
 
    //--------------------------------------------------
    //heterbart bm(m);
-   bm.setprior(alpha,mybeta,tau,gamma);
+   //bm.setprior(alpha,mybeta,tau,gamma);
+   bm.setprior(alpha,mybeta,gamma);
    bm.setdata(p,n,ix,iy,numcut);
    bm.setdart(a,b,rho,aug,dart,theta,omega);
 
