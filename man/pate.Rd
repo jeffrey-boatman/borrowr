@@ -38,7 +38,7 @@ with potential borrowing from supplemental sources. Adjust for confounding by fi
 a conditional mean model with the treatment variable and confounding variables.
 }
 \details{
-To adjust for confounding, the combr package estimates the PATE by fitting a
+To adjust for confounding, the PATE is estimated using a
 model for the conditional mean given treatment and confounders. Currently,
 two models are available, a Bayesian linear model with an inverse-gamma prior,
 and Bayesian Additive Regression Trees (BART; Chipman & McCulloch, 2010).
