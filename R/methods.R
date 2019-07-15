@@ -31,7 +31,7 @@ summary.pate <- function(object, ...) {
   x <- object
   out <- list()
   out$call <- x$call
-  out$posterior_summary <- posterior_summary(x$post)
+  out$posterior_summary <- posterior_summary(x$pate_post)
   out$mems <- x$MEMs + 0
   out$post_probs <- x$post_probs
   class(out) <- "summary.pate"
