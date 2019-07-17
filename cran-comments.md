@@ -9,24 +9,18 @@ There was 1 NOTE:
 
 * checking CRAN incoming feasibility ... NOTE
   Maintainer: 'Jeffrey A. Boatman <boat0036@umn.edu>'
-  
-  This is the first submission for this package (It is a resubmission of a first submission). Please note that I originally submitted this package under the name combr, but I have decided to name it borrowr since this is a better description of the package. I apologize for any inconvenience this may cause. I have included my replies to the original submission below.
-  
+
 ## Replies to CRAN on submission:
 
-* Please do not start the description with "This package", package name, title or similar.
+* Please only capitalize sentence beginnings and names in the description text.
 
-  The description does not start with the package name or "This package".
+This is fixed, although I continue to capitalize acronyms and the word Bayesian since Bayes is a name. I retained capitalization for the title in the Description file since it's my understanding that this is how it's supposed to be, but I apologize if this is not correct.
 
-* The Description field is intended to be a (one paragraph) description of what the    package does and why it may be useful. Please elaborate.
+* You write information messages to the console that cannot be easily suppressed. It is more R like to generate objects that can be used to extract the information a user is interested in, and then print() that object. Instead of print()/cat() rather use message()/warning() if you
+really have to write text to the console. f.i.: cat() in wbart.R
 
-  I have elaborated on what the package does.
+I have commented-out the calls to cat in the wbart.R file. I have also commented out calls to printf in the source code.
 
-* You write information messages to the console that cannot be easily suppressed. It is more R like to generate objects that can be used to extract the information a user is interested in, and then print() that object. Instead of print()/cat() rather use message()/warning() if you really have to write text to the console.
+* Please add \value to .Rd files and explain the functions results in the documentation.
 
-  I have fixed the 'summary' function so that it no longer uses print/cat. The only functions that use print/cat are now the print functions. I still use 'message' in one instance to update the user on a function that may be slow to run if certain arguments are used. 
-
-* Please add references describing the methods in your package also to the description field of your DESCRIPTION file in the form authors (year) <doi:...>, authors (year) <arXiv:...>, authors (year, ISBN:...), with no space after 'doi:', 'arXiv:' and angle brackets for auto-linking.
-
-  Done.
-
+This is done for the pate function. Because this is the only exported function, this is the only function I've done this for. I did not add \value for adapt.Rd since adapt is a data set.

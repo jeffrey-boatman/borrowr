@@ -348,7 +348,7 @@ double drawnodemu(size_t n, double sy, double gamma, double sigma, rn& gen)
    double s2 = sigma*sigma;
    double b = n/s2;
    double a = 1.0/(gamma*sigma*sigma);
-   printf("n, sy: %u, %f", n, sy);
+   //printf("n, sy: %u, %f", n, sy);
    return (sy/s2)/(a+b) + gen.normal()/sqrt(a+b);
 }
 

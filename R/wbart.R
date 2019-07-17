@@ -57,20 +57,20 @@ wbart <- function (x.train, y.train, x.test = matrix(0, 0, 0), sparse = FALSE,
     y.train = y.train - fmean
     if ((nkeeptrain != 0) & ((ndpost%%nkeeptrain) != 0)) {
         nkeeptrain = ndpost
-        cat("*****nkeeptrain set to ndpost\n")
+        # cat("*****nkeeptrain set to ndpost\n")
     }
     if ((nkeeptest != 0) & ((ndpost%%nkeeptest) != 0)) {
         nkeeptest = ndpost
-        cat("*****nkeeptest set to ndpost\n")
+        # cat("*****nkeeptest set to ndpost\n")
     }
     if ((nkeeptestmean != 0) & ((ndpost%%nkeeptestmean) != 0)) {
         nkeeptestmean = ndpost
-        cat("*****nkeeptestmean set to ndpost\n")
+        # cat("*****nkeeptestmean set to ndpost\n")
     }
     if ((nkeeptreedraws != 0) & ((ndpost%%nkeeptreedraws) !=
         0)) {
         nkeeptreedraws = ndpost
-        cat("*****nkeeptreedraws set to ndpost\n")
+        # cat("*****nkeeptreedraws set to ndpost\n")
     }
     nu = sigdf
     if (is.na(lambda)) {

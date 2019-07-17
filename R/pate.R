@@ -77,6 +77,36 @@
 #'@param ndpost number of draws from the posterior
 #'@param ... additional arguments passed to BART
 #'
+#'@return
+#'
+#'A list with components:
+#'
+#'\item{call}{The function call}
+#'
+#'\item{estimator}{The estimator used to adjust for confounding, "bayesian_lm" for
+#'Bayesian linear model, or "BART" for Bayesian additive regression trees}
+#'
+#'\item{EY0}{Posterior draws of the expected potential outcome if all observations were
+#'treated}
+#'
+#'\item{EY1}{Posterior draws of the expected potential outcome if all observations were
+#'untreated}
+#'
+#'\item{log_marg_like}{Log marginal likelihood for each MEM}
+#'
+#'\item{mem_pate_post}{Array containing, for each MEM, posterior draws for the population
+#'average treatment effect}
+#'
+#'\item{MEMs}{Matrix showing showing which data sources are exchangeable under each MEM.
+#' 1 = exchangeable.}
+#'
+#'\item{pate_post}{Posterior draws for the population average treatment effect. Weighted
+#' average of \code{mem_pate_post}, where \code{post_probs} are the weights}
+#'
+#'\item{post_probs}{Posterior probability that each MEM (shown in the list element \code{MEMs})
+#'is the true model.}
+#'
+#'
 #'@examples
 #'data(adapt)
 #'
