@@ -87,10 +87,10 @@
 #'Bayesian linear model, or "BART" for Bayesian additive regression trees}
 #'
 #'\item{EY0}{Posterior draws of the expected potential outcome if all observations were
-#'treated}
+#'treated. One column for each MEM}
 #'
 #'\item{EY1}{Posterior draws of the expected potential outcome if all observations were
-#'untreated}
+#'untreated. One column for each MEM}
 #'
 #'\item{log_marg_like}{Log marginal likelihood for each MEM}
 #'
@@ -106,7 +106,11 @@
 #'\item{post_probs}{Posterior probability that each MEM (shown in the list element \code{MEMs})
 #'is the true model.}
 #'
+#'\item{beta_post_mean}{If \code{estimator = "bayesian_lm"}, a matrix with the posterior means
+#'of the coefficients for the primary source from each MEM. If \code{estimator = "BART"}, \code{NA}}.
 #'
+#'\item{beta_post_var}{If \code{estimator = "bayesian_lm"}, a matrix with the posterior variance
+#'of the coefficients for the primary source from each MEM. If \code{estimator = "BART"}, \code{NA}}.
 #'@examples
 #'data(adapt)
 #'
@@ -127,22 +131,33 @@ pate <- function(formula, estimator = c("BART", "bayesian_lm"), data, src_var, p
   ndpost = 1e3, ...) {
 
   cl <- match.call()
+  mf <- match.call(expand.dots = FALSE)
 
   # error checking
-  force(formula)
-  force(data)
+  # force(formula)
+  # force(data)
   estimator <- match.arg(estimator)
   if(!is.character(src_var))
     stop("src_var must be a quoted character variable.")
   if(!is.character(trt_var))
     stop("trt_var must be a quoted character variable.")
-  if(is.matrix(data))
-    data <- as.data.frame(data)
-  if(!(src_var %in% names(data)))
-    stop(sprintf("src_var '%s' not found in data.", src_var))
-  if(!(trt_var %in% names(data)))
-    stop(sprintf("trt_var '%s' not found in data.", trt_var))
-  if(is.factor(data[, trt_var]))
+  # build data
+  fl <- eval(substitute(update.formula(formula, ~ . + src_var + trt_var),
+    list(src_var = as.name(src_var), trt_var = as.name(trt_var))))
+  # borrowed from lm:
+  m <- match("data", names(mf), 0L)
+  mf <- mf[c(1L, m)]
+  mf$formula <- fl
+  mf$drop.unused.levels <- TRUE
+  mf[[1L]] <- quote(stats::model.frame)
+  mf <- eval(mf, parent.frame())
+  # if(is.matrix(data))
+  #   data <- as.data.frame(data)
+  # if(!(src_var %in% names(data)))
+  #   stop(sprintf("src_var '%s' not found in data.", src_var))
+  # if(!(trt_var %in% names(data)))
+  #   stop(sprintf("trt_var '%s' not found in data.", trt_var))
+  if(is.factor(mf[, trt_var]))
     stop(sprintf("trt_var '%s' must be a numeric variable, not a factor.", trt_var))
   # if(!(trt_var %in% all.vars(formula[[3]])))
   #   stop(sprintf("The formula must include the trt_var '%s'.", trt_var))
@@ -154,7 +169,7 @@ pate <- function(formula, estimator = c("BART", "bayesian_lm"), data, src_var, p
 
   # remove src_var from formula if present, add it back as with interactions
   # for all variables.
-  ot <- terms(formula, data = data) # original formula terms
+  ot <- terms(formula, data = mf) # original formula terms
   fac <- attr(ot, "factors")
   # possible names of source variables in fm:
   pns <- c(src_var, sprintf("as.factor(%s)", src_var))
@@ -189,7 +204,7 @@ pate <- function(formula, estimator = c("BART", "bayesian_lm"), data, src_var, p
   # formula <- eval(substitute(update(formula, ~ src_var + .),
   #   list(src_var = as.name(src_var))))
 
-  mf <- data[, c(all.vars(formula), src_var)]
+  mf <- mf[, c(all.vars(formula), src_var)]
   # verify that trt_var is coded 0-1
   # error is here to ensure that NA values in trt_var have been removed
   treat_vals <- sort(unique(mf[, trt_var]))
@@ -225,7 +240,9 @@ pate <- function(formula, estimator = c("BART", "bayesian_lm"), data, src_var, p
     mf[, src_var] <- factor(mf[, src_var], levels = c(srcs[sm], srcs[-sm]))
   }
 
-  mf[, src_var] <- droplevels(mf[, src_var])
+  # shouldnt be necessary after updating the handling of the data
+  # arg with the call to model.frame
+  # mf[, src_var] <- droplevels(mf[, src_var])
 
   attr(mf, "formula") <- formula
   attr(mf, "src_var") <- src_var

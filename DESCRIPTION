@@ -1,7 +1,7 @@
 Package: borrowr
 Type: Package
 Title: Estimate Causal Effects with Borrowing Between Data Sources
-Version: 0.1.0
+Version: 0.1.1
 Author: Jeffrey A. Boatman [aut, cre],
   David M. Vock [aut],
   Joseph S. Koopmeiners [aut]

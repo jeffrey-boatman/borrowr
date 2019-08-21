@@ -41,10 +41,10 @@ A list with components:
 Bayesian linear model, or "BART" for Bayesian additive regression trees}
 
 \item{EY0}{Posterior draws of the expected potential outcome if all observations were
-treated}
+treated. One column for each MEM}
 
 \item{EY1}{Posterior draws of the expected potential outcome if all observations were
-untreated}
+untreated. One column for each MEM}
 
 \item{log_marg_like}{Log marginal likelihood for each MEM}
 
@@ -59,6 +59,12 @@ average of \code{mem_pate_post}, where \code{post_probs} are the weights}
 
 \item{post_probs}{Posterior probability that each MEM (shown in the list element \code{MEMs})
 is the true model.}
+
+\item{beta_post_mean}{If \code{estimator = "bayesian_lm"}, a matrix with the posterior means
+of the coefficients for the primary source from each MEM. If \code{estimator = "BART"}, \code{NA}}.
+
+\item{beta_post_var}{If \code{estimator = "bayesian_lm"}, a matrix with the posterior variance
+of the coefficients for the primary source from each MEM. If \code{estimator = "BART"}, \code{NA}}.
 }
 \description{
 Estimates the population average treatment effect from a primary data source
