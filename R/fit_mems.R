@@ -22,6 +22,9 @@ fit_mems <- function(mf, estimator, ndpost, ...) {
   formula <- attr(mf, "formula")
   src_var <- attr(mf, "src_var")
   trt_var <- attr(mf, "trt_var")
+  com_var <- attr(mf, "com_var")
+
+  nc <- !is.na(com_var)
 
   ps <- attr(mf, "primary_source")
   sl <- levels(mf[, src_var])
@@ -72,6 +75,10 @@ fit_mems <- function(mf, estimator, ndpost, ...) {
     X1 <- Xf[Xf[, src_var] == ps, ]
     X0[, trt_var] <- 0
     X1[, trt_var] <- 1
+    if (nc) {
+      X0[, com_var] <- 1
+      X1[, com_var] <- 1
+    }
     X0 <- as.data.frame(model.matrix(formula, X0))
     X1 <- as.data.frame(model.matrix(formula, X1))
   } else if (estimator == "BART") {
@@ -81,6 +88,7 @@ fit_mems <- function(mf, estimator, ndpost, ...) {
   attr(Xm, "src_var") <- src_var
   attr(Xm, "trt_var") <- trt_var
   attr(Xm, "primary_source") <- ps
+  attr(Xm, "com_var") <- com_var
 
   sro <- Xf[, src_var]
   Xs <- split(Xm, sro)
