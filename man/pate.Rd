@@ -70,12 +70,14 @@ is the true model.}
 \item{beta_post_mean}{If \code{estimator = "bayesian_lm"}, a matrix with the posterior means
 of the coefficients for the primary source from each MEM. If \code{estimator = "BART"}, \code{NA}}.
 
+\item{beta_post_var}{If \code{estimator} = \code{"bayesian_lm"}, a matrix with the posterior variance
+of the coefficients for the primary source from each MEM. If \code{estimator = "BART"}, \code{NA}}.
+
 \item{beta_post_var}{If \code{estimator = "bayesian_lm"}, a matrix with the posterior variance
 of the coefficients for the primary source from each MEM. If \code{estimator = "BART"}, \code{NA}}.
 
 \item{non_compliance}{Logical, indicating whether the model adjusted for confounding
 due to noncompliance}
-
 }
 \description{
 Estimates the population average treatment effect from a primary data source
