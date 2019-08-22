@@ -2,4 +2,5 @@
 ^\.Rproj\.user$
 make-vignette-data.R
 cran-comments.md
+borrowr-testing.R
 ^CRAN-RELEASE$
