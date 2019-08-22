@@ -74,6 +74,12 @@
 #'@param trt_var which variable indicates the treatment.
 #'Must match a column name in the data. Must be coded as numeric values 0 and 1, 0 for
 #'untreated, 1 for treated.
+#'@param compliance_var Optional argument if adjustment for confounding
+#'due to noncompliance is needed. \code{compliance_var} indicates the compliance
+#'indicator.
+#'Must match a column name in the data. Must be coded as numeric values 0 and 1, 0 for
+#'noncompliant, 1 for compliant. If this argument is specified, the formula must also
+#'include the compliance variable.
 #'@param ndpost number of draws from the posterior
 #'@param ... additional arguments passed to BART
 #'
@@ -111,6 +117,13 @@
 #'
 #'\item{beta_post_var}{If \code{estimator = "bayesian_lm"}, a matrix with the posterior variance
 #'of the coefficients for the primary source from each MEM. If \code{estimator = "BART"}, \code{NA}}.
+=======
+#'
+#'\item{beta_post_var}{If \code{estimator = "bayesian_lm"}, a matrix with the posterior variance
+#'of the coefficients for the primary source from each MEM. If \code{estimator = "BART"}, \code{NA}}.
+#'
+#'\item{non_compliance}{Logical, indicating whether the model adjusted for confounding
+#'due to noncompliance}
 #'@examples
 #'data(adapt)
 #'
@@ -128,26 +141,53 @@
 #' hierarchical modeling based on multisource exchangeability. Biostatistics,
 #' 19(2): 169-184.
 pate <- function(formula, estimator = c("BART", "bayesian_lm"), data, src_var, primary_source, trt_var,
-  ndpost = 1e3, ...) {
+  compliance_var, ndpost = 1e3, ...) {
 
   cl <- match.call()
+  mf <- match.call(expand.dots = FALSE)
 
   # error checking
-  force(formula)
-  force(data)
+  # force(formula)
+  # force(data)
   estimator <- match.arg(estimator)
-  if(!is.character(src_var))
-    stop("src_var must be a quoted character variable.")
-  if(!is.character(trt_var))
-    stop("trt_var must be a quoted character variable.")
-  if(is.matrix(data))
-    data <- as.data.frame(data)
-  if(!(src_var %in% names(data)))
-    stop(sprintf("src_var '%s' not found in data.", src_var))
-  if(!(trt_var %in% names(data)))
-    stop(sprintf("trt_var '%s' not found in data.", trt_var))
-  if(is.factor(data[, trt_var]))
+  nc <- !missing(compliance_var)
+
+  # these don't work
+  # if (!is.character(src_var))
+  #   stop("'src_var' must be a quoted character variable.")
+  # if (!is.character(trt_var))
+  #   stop("'trt_var' must be a quoted character variable.")
+  # if (nc)
+  #   if (!is.character(compliance_var))
+  #     stop("'compliance_var' must be a quoted character variable.")
+
+  # build data
+  fl <- if (nc) {
+    eval(substitute(update.formula(formula, ~ . + src_var + trt_var + compliance_var),
+      list(src_var = as.name(src_var), trt_var = as.name(trt_var),
+        compliance_var = as.name(compliance_var))))
+  } else {
+    eval(substitute(update.formula(formula, ~ . + src_var + trt_var),
+      list(src_var = as.name(src_var), trt_var = as.name(trt_var))))
+  }
+  # borrowed from lm:
+  m <- match("data", names(mf), 0L)
+  mf <- mf[c(1L, m)]
+  mf$formula <- fl
+  mf$drop.unused.levels <- TRUE
+  mf[[1L]] <- quote(stats::model.frame)
+  mf <- eval(mf, parent.frame())
+  # if(is.matrix(data))
+  #   data <- as.data.frame(data)
+  # if(!(src_var %in% names(data)))
+  #   stop(sprintf("src_var '%s' not found in data.", src_var))
+  # if(!(trt_var %in% names(data)))
+  #   stop(sprintf("trt_var '%s' not found in data.", trt_var))
+  if(is.factor(mf[, trt_var]))
     stop(sprintf("trt_var '%s' must be a numeric variable, not a factor.", trt_var))
+  if (nc)
+    if (is.factor(mf[, compliance_var]))
+      stop(sprintf("compliance '%s' must be a numeric variable, not a factor.", trt_var))
   # if(!(trt_var %in% all.vars(formula[[3]])))
   #   stop(sprintf("The formula must include the trt_var '%s'.", trt_var))
 
@@ -156,9 +196,8 @@ pate <- function(formula, estimator = c("BART", "bayesian_lm"), data, src_var, p
   # names(data)[nm] <- c("src", "trt")
 
 
-  # remove src_var from formula if present, add it back as with interactions
-  # for all variables.
-  ot <- terms(formula, data = data) # original formula terms
+  # remove src_var from formula if present
+  ot <- terms(formula, data = mf) # original formula terms
   fac <- attr(ot, "factors")
   # possible names of source variables in fm:
   pns <- c(src_var, sprintf("as.factor(%s)", src_var))
@@ -177,28 +216,31 @@ pate <- function(formula, estimator = c("BART", "bayesian_lm"), data, src_var, p
     stop(sprintf("trt_var '%s' must not be a factor in the formula.", trt_var))
   if (trt_var %!in% rownames(fac))
     stop(sprintf("The formula must include the trt_var '%s'.", trt_var))
+  if (nc)
+    if (compliance_var %!in% rownames(fac))
+      stop(sprintf("The formula must include the compliance_var '%s'.", compliance_var))
 
-
-  # !!! to do !!! ----
-  # - add a check to ensure all variables in formula
-  # -     are in the data set
-  # really dumb way to do it:
-  # attr(ot, "factors")
-  #  pos <- grep(src_var, attr(terms(formula), "term.labels"))
-  #nt <- attr(terms(formula), "term.labels")[-pos]
-  # formula <- reformulate(nt, response = all.vars(formula)[[1]])
 
   # this was code that added source variable an its interactions with
   # all other predictors. no longer doing this.
   # formula <- eval(substitute(update(formula, ~ src_var + .),
   #   list(src_var = as.name(src_var))))
 
-  mf <- data[, c(all.vars(formula), src_var)]
+  mf <- mf[, c(all.vars(formula), src_var)]
   # verify that trt_var is coded 0-1
   # error is here to ensure that NA values in trt_var have been removed
   treat_vals <- sort(unique(mf[, trt_var]))
   if (!(identical(c(0, 1), treat_vals) | identical(as.integer(c(0, 1)), treat_vals)))
     stop(sprintf("trt_var '%s' must be coded as numeric values 0 and 1", trt_var))
+
+  # check that values of compliance_var are only 0-1
+  if (nc) {
+    cvals <- sort(unique(mf[, compliance_var]))
+    if (!(identical(c(0, 1), cvals) | identical(as.integer(c(0, 1)), cvals)))
+      stop(sprintf("compliance_var '%s' must be coded as numeric values 0 and 1",
+        compliance_var))
+  }
+
 
   on <- nrow(mf)
   mf <- na.omit(mf)
@@ -229,12 +271,15 @@ pate <- function(formula, estimator = c("BART", "bayesian_lm"), data, src_var, p
     mf[, src_var] <- factor(mf[, src_var], levels = c(srcs[sm], srcs[-sm]))
   }
 
-  mf[, src_var] <- droplevels(mf[, src_var])
+  # shouldnt be necessary after updating the handling of the data
+  # arg with the call to model.frame
+  # mf[, src_var] <- droplevels(mf[, src_var])
 
   attr(mf, "formula") <- formula
   attr(mf, "src_var") <- src_var
   attr(mf, "trt_var") <- trt_var
   attr(mf, "primary_source") <- primary_source
+  attr(mf, "com_var") <- if (nc) compliance_var else NA
   # attr(mf, "in_prim") <- mf[, src_var] == primary_source
   # but what if the formula has specified as.factor for the src variable?
   # and need to make sure that src_var is found in the formula.
@@ -242,6 +287,7 @@ pate <- function(formula, estimator = c("BART", "bayesian_lm"), data, src_var, p
   # works even if it's numeric.,
   out <- fit_mems(mf = mf, estimator = estimator, ndpost = ndpost, ...)
   out$call <- cl
+  out$non_compliance <- nc
   class(out) <- "pate"
 
   out

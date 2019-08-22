@@ -5,7 +5,7 @@
 \title{Population Average Treatment Effect (PATE)}
 \usage{
 pate(formula, estimator = c("BART", "bayesian_lm"), data, src_var,
-  primary_source, trt_var, ndpost = 1000, ...)
+  primary_source, trt_var, compliance_var, ndpost = 1000, ...)
 }
 \arguments{
 \item{formula}{An object of class formula. The left hand side must be the outcome,
@@ -27,6 +27,13 @@ one of the values of \code{src_var}.}
 \item{trt_var}{which variable indicates the treatment.
 Must match a column name in the data. Must be coded as numeric values 0 and 1, 0 for
 untreated, 1 for treated.}
+
+\item{compliance_var}{Optional argument if adjustment for confounding
+due to noncompliance is needed. \code{compliance_var} indicates the compliance
+indicator.
+Must match a column name in the data. Must be coded as numeric values 0 and 1, 0 for
+noncompliant, 1 for compliant. If this argument is specified, the formula must also
+include the compliance variable.}
 
 \item{ndpost}{number of draws from the posterior}
 
@@ -65,6 +72,10 @@ of the coefficients for the primary source from each MEM. If \code{estimator = "
 
 \item{beta_post_var}{If \code{estimator = "bayesian_lm"}, a matrix with the posterior variance
 of the coefficients for the primary source from each MEM. If \code{estimator = "BART"}, \code{NA}}.
+
+\item{non_compliance}{Logical, indicating whether the model adjusted for confounding
+due to noncompliance}
+
 }
 \description{
 Estimates the population average treatment effect from a primary data source

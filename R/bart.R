@@ -39,6 +39,9 @@ bart <- function(Y, X, estimate, nprior = 100, ntree = 200, ndpost,...) {
   src_var <- attr(X, "src_var")
   trt_var <- attr(X, "trt_var")
   prm_src <- attr(X, "primary_source")
+  com_var <- attr(X, "com_var")
+
+  nc <- !is.na(com_var)
 
   xo <- X[, src_var] == prm_src
   X[, src_var] <- NULL
@@ -221,6 +224,10 @@ bart <- function(Y, X, estimate, nprior = 100, ntree = 200, ndpost,...) {
     X0 <- X1 <- xp[xo, , drop = FALSE]
     X0[, trt_var] <- 0
     X1[, trt_var] <- 1
+    if (nc) {
+      X0[, com_var] <- 1
+      X1[, com_var] <- 1
+    }
     Y0 <- quiet(predict)(bfit, X0)
     Y1 <- quiet(predict)(bfit, X1)
     # Y0 <- quiet(predict)(bfit, bm0)
