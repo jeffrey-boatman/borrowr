@@ -75,6 +75,7 @@ of the coefficients for the primary source from each MEM. If \code{estimator = "
 
 \item{non_compliance}{Logical, indicating whether the model adjusted for confounding
 due to noncompliance}
+
 }
 \description{
 Estimates the population average treatment effect from a primary data source

@@ -80,6 +80,9 @@ bayes_lm <- function(Y, X, X0, X1, ndpost) {
 
   # don't name dimensions here. Will be done in the calling function.
   beta_post <- array(dim = c(ndpost, p))
+
+  colnames(beta_post) <- colnames(X)
+
   Y0 <- array(dim = c(ndpost, nrow(X0)))
   Y1 <- array(dim = c(ndpost, nrow(X1)))
 
@@ -109,6 +112,7 @@ bayes_lm <- function(Y, X, X0, X1, ndpost) {
     pate_post     = pate_post)
   out$EY0 <- rowMeans(Y0)
   out$EY1 <- rowMeans(Y1)
+  out$beta_post <- beta_post
 
   out
 }
