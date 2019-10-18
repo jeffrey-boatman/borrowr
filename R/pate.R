@@ -161,6 +161,8 @@ pate <- function(formula, estimator = c("BART", "bayesian_lm"), data, src_var, p
   #     stop("'compliance_var' must be a quoted character variable.")
 
   # build data
+  if (!missing(data))
+    formula <- formula(terms(formula, data = data))
   fl <- if (nc) {
     eval(substitute(update.formula(formula, ~ . + src_var + trt_var + compliance_var),
       list(src_var = as.name(src_var), trt_var = as.name(trt_var),

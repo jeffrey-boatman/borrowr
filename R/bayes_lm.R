@@ -40,7 +40,8 @@ bayes_lm <- function(Y, X, X0, X1, ndpost) {
 
   # (fairly) vague Normal-Inverse Gamma prior specifications
   muBeta <- unname(coef(flm))
-  rho    <- 0.2
+  # rho    <- 0.2
+  rho <- 0
   Vbeta  <- 100 * (rho * matrix(1, p, p) + (1 - rho) * diag(p))
 
   # specification for IG(a, b) prior on sigma ^ 2. This
@@ -51,10 +52,12 @@ bayes_lm <- function(Y, X, X0, X1, ndpost) {
   ss_mu <- summary(flm)$sigma ^ 2
   if (is.na(ss_mu))
     stop("insufficient number of observations to fit model.")
-  ss_sd <- sqrt(2 * ss_mu ^ 4 / n)
+  # ss_sd <- sqrt(2 * ss_mu ^ 4 / n)
   # mean and sd re-paramaterized for inverse gamma dist'n
-  b <- ss_mu ^ 3 / ss_sd ^ 2 + ss_mu
-  a <- (b + ss_mu) / ss_mu
+  # b <- ss_mu ^ 3 / ss_sd ^ 2 + ss_mu
+  # a <- (b + ss_mu) / ss_mu
+  a <- 0.1
+  b <- 0.1
 
   # b / (a - 1)
   # b ^ 2 / ((a - 1) ^ 2 * (a - 2))
