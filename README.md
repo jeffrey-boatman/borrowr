@@ -8,7 +8,4 @@ devtools::install_github("jeffrey-boatman/borrowr", build = TRUE, build_opts = c
 
 To do:
 
-  - pate fails if data = subset(...) and doesn't work with global
-    variables. Fixed.
-    
-  - update pate to include adjustment for confounding due to noncompliance.
+  - update documentation (changes included: adding argument for prior probability of exchangeability, updated gamma prior for bayesian linear model, ...)

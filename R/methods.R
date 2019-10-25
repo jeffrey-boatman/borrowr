@@ -36,6 +36,7 @@ summary.pate <- function(object, ...) {
   out$call <- x$call
   out$posterior_summary <- posterior_summary(x$pate_post)
   out$mems <- x$MEMs + 0
+  out$prior_prob <- x$prior_prob
   out$post_probs <- x$post_probs
   out$non_compliance <- x$non_compliance
   class(out) <- "summary.pate"
@@ -54,6 +55,8 @@ print.summary.pate <- function(x, ...) {
   psum <- x$posterior_summary
   print(psum)
 
+  cat("\nPrior Probability of Exchangeability:\n\n")
+  print(x$prior_prob)
   cat("\nExchangeability Matrix (1 == Exchangeable with primary source):\n\n")
   print(x$mems)
   cat("\nMEM Posterior Probability:\n")

@@ -139,7 +139,8 @@
 #'Kaizer, Alexander M., Koopmeiners, Joseph S., Hobbs, Brian P. (2018) Bayesian
 #' hierarchical modeling based on multisource exchangeability. Biostatistics,
 #' 19(2): 169-184.
-pate <- function(formula, estimator = c("BART", "bayesian_lm"), data, src_var, primary_source, trt_var,
+pate <- function(formula, estimator = c("BART", "bayesian_lm"), data, src_var,
+  primary_source, prior_prob, trt_var,
   compliance_var, ndpost = 1e3, ...) {
 
   cl <- match.call()
@@ -272,6 +273,17 @@ pate <- function(formula, estimator = c("BART", "bayesian_lm"), data, src_var, p
     mf[, src_var] <- factor(mf[, src_var], levels = c(srcs[sm], srcs[-sm]))
   }
 
+  nl <- length(levels(mf[, src_var]))
+  if (missing(prior_prob)) {
+    prior_prob <- rep(1 / 2, nl - 1)
+  } else {
+    if (any(prior_prob <= 0 | prior_prob >= 1))
+      stop("elements of 'prior_prob' must be between 0 and 1")
+    if (length(prior_prob) != nl - 1)
+      stop("'length(prior_prob)' must equal the number of sources minus 1")
+  }
+
+
   # shouldnt be necessary after updating the handling of the data
   # arg with the call to model.frame
   # mf[, src_var] <- droplevels(mf[, src_var])
@@ -286,7 +298,7 @@ pate <- function(formula, estimator = c("BART", "bayesian_lm"), data, src_var, p
   # and need to make sure that src_var is found in the formula.
   # need to check that the source variance is acharacter, or that the code
   # works even if it's numeric.,
-  out <- fit_mems(mf = mf, estimator = estimator, ndpost = ndpost, ...)
+  out <- fit_mems(mf = mf, estimator = estimator, ndpost = ndpost, prior_prob, ...)
   out$call <- cl
   out$non_compliance <- nc
   class(out) <- "pate"
