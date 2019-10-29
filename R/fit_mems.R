@@ -15,7 +15,7 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
-fit_mems <- function(mf, estimator, ndpost, prior_prob, ...) {
+fit_mems <- function(mf, estimator, ndpost, exch_prob, ...) {
   # if(estimator != "bayesian_lm")
   #   stop("'bayesian_lm' is currently the only estimator implemented.")
 
@@ -50,7 +50,7 @@ fit_mems <- function(mf, estimator, ndpost, prior_prob, ...) {
 
   prior_mem <- numeric(ncol(im))
   names(prior_mem) <- seq_len(ncol(im))
-  names(prior_prob)   <- rownames(im)[-1]
+  names(exch_prob)   <- rownames(im)[-1]
 
   mem_pate_post <- array(dim = c(ndpost, ncol(im)))
   mem_EY0 <- array(dim = c(ndpost, ncol(im)))
@@ -157,7 +157,7 @@ fit_mems <- function(mf, estimator, ndpost, prior_prob, ...) {
     cm <- im[, mem]
     # cn <- names(cm)[which(cm)]
     exch <- 1 * cm[-1]
-    prior_mem[mem] <- prod(exch * prior_prob + (1 - exch) * (1 - prior_prob))
+    prior_mem[mem] <- prod(exch * exch_prob + (1 - exch) * (1 - exch_prob))
     tfits <- sepfits
     if (any(cm[-1L])) {
       tempX <- do.call(rbind, Xs[cm])
@@ -292,7 +292,7 @@ fit_mems <- function(mf, estimator, ndpost, prior_prob, ...) {
     log_marg_like = log_marg_like,
     post_probs    = post_probs,
     MEMs          = im,
-    prior_prob    = prior_prob
+    exch_prob    = exch_prob
   )
 
   out$mem_pate_post <- mem_pate_post

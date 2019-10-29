@@ -140,7 +140,7 @@
 #' hierarchical modeling based on multisource exchangeability. Biostatistics,
 #' 19(2): 169-184.
 pate <- function(formula, estimator = c("BART", "bayesian_lm"), data, src_var,
-  primary_source, prior_prob, trt_var,
+  primary_source, exch_prob, trt_var,
   compliance_var, ndpost = 1e3, ...) {
 
   cl <- match.call()
@@ -274,13 +274,13 @@ pate <- function(formula, estimator = c("BART", "bayesian_lm"), data, src_var,
   }
 
   nl <- length(levels(mf[, src_var]))
-  if (missing(prior_prob)) {
-    prior_prob <- rep(1 / 2, nl - 1)
+  if (missing(exch_prob)) {
+    exch_prob <- rep(1 / 2, nl - 1)
   } else {
-    if (any(prior_prob <= 0 | prior_prob >= 1))
-      stop("elements of 'prior_prob' must be between 0 and 1")
-    if (length(prior_prob) != nl - 1)
-      stop("'length(prior_prob)' must equal the number of sources minus 1")
+    if (any(exch_prob <= 0 | exch_prob >= 1))
+      stop("elements of 'exch_prob' must be between 0 and 1")
+    if (length(exch_prob) != nl - 1)
+      stop("'length(exch_prob)' must equal the number of sources minus 1")
   }
 
 
@@ -298,7 +298,7 @@ pate <- function(formula, estimator = c("BART", "bayesian_lm"), data, src_var,
   # and need to make sure that src_var is found in the formula.
   # need to check that the source variance is acharacter, or that the code
   # works even if it's numeric.,
-  out <- fit_mems(mf = mf, estimator = estimator, ndpost = ndpost, prior_prob, ...)
+  out <- fit_mems(mf = mf, estimator = estimator, ndpost = ndpost, exch_prob, ...)
   out$call <- cl
   out$non_compliance <- nc
   class(out) <- "pate"
