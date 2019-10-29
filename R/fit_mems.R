@@ -15,7 +15,7 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
-fit_mems <- function(mf, estimator, ndpost, ...) {
+fit_mems <- function(mf, estimator, ndpost, exch_prob, ...) {
   # if(estimator != "bayesian_lm")
   #   stop("'bayesian_lm' is currently the only estimator implemented.")
 
@@ -47,6 +47,10 @@ fit_mems <- function(mf, estimator, ndpost, ...) {
     source = sl,
     MEM    = seq_len(ncol(im))
   )
+
+  prior_mem <- numeric(ncol(im))
+  names(prior_mem) <- seq_len(ncol(im))
+  names(exch_prob)   <- rownames(im)[-1]
 
   mem_pate_post <- array(dim = c(ndpost, ncol(im)))
   mem_EY0 <- array(dim = c(ndpost, ncol(im)))
@@ -152,6 +156,8 @@ fit_mems <- function(mf, estimator, ndpost, ...) {
       message(sprintf("Fitting MEM %d of %d ...", mem, ncol(im)))
     cm <- im[, mem]
     # cn <- names(cm)[which(cm)]
+    exch <- 1 * cm[-1]
+    prior_mem[mem] <- prod(exch * exch_prob + (1 - exch) * (1 - exch_prob))
     tfits <- sepfits
     if (any(cm[-1L])) {
       tempX <- do.call(rbind, Xs[cm])
@@ -268,22 +274,25 @@ fit_mems <- function(mf, estimator, ndpost, ...) {
   #   }
   # }
 
-  cons  <- -max(log_marg_like)
-  probs <- exp(cons + log_marg_like) / sum(exp(cons + log_marg_like))
-  # probs[which(is.na(probs))] <- 0
-  pate_post <- sample_posterior(mem_pate_post, probs)
+  lml <- log_marg_like
+  cons  <- -max(lml)
+  # post_probs <- exp(cons + log_marg_like) / sum(exp(cons + log_marg_like))
+  post_probs <- exp(cons + lml) * prior_mem / sum(exp(cons + lml) * prior_mem)
+  # post_probs[which(is.na(post_probs))] <- 0
+  pate_post <- sample_posterior(mem_pate_post, post_probs)
 
   # better to return the matrices rather than the
   # weighted averages.
-  EY0 <- sample_posterior(mem_EY0, probs)
-  EY1 <- sample_posterior(mem_EY1, probs)
+  EY0 <- sample_posterior(mem_EY0, post_probs)
+  EY1 <- sample_posterior(mem_EY1, post_probs)
 
   out <- list(
     estimator     = estimator,
     pate_post     = pate_post,
     log_marg_like = log_marg_like,
-    post_probs    = probs,
-    MEMs          = im
+    post_probs    = post_probs,
+    MEMs          = im,
+    exch_prob    = exch_prob
   )
 
   out$mem_pate_post <- mem_pate_post
