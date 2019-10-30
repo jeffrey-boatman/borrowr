@@ -14,13 +14,15 @@ X <- rnorm(N, 30 + 20 * A, sd = 10)
 Y0 <- rnorm(N, 72 + 3 * sqrt(X) + o * 2, 2)
 Y1 <- rnorm(N, 90 + exp(0.04 * X) - o * 2, 2)
 Y <- A * Y1 + (1 - A) * Y0
+C <- rbinom(n, 1, plogis(0.05 * X))
 
 adapt <- data.frame(
   y = Y,
   x = X,
   source = S,
   # treatment = factor(A)
-  treatment = A
+  treatment = A,
+  compliant = C
 )
 
 adapt <- adapt[order(adapt$source), ]

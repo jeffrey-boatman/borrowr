@@ -3,6 +3,7 @@
 .RData
 .Ruserdata
 borrowr-testing.R
+data/*.RData
 src/*.o
 src/*.so
 src/*.dll

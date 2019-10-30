@@ -37,16 +37,14 @@
 #'If \code{formula = "bayesian_lm"}, then the function fits the Bayesian linear model
 #'\deqn{Y = X\beta + \epsilon, \epsilon ~ N(0, \sigma ^ 2).}
 #'The prior on the regression coefficients is normal with mean vector 0 and variance
-#'matrix with diagonal elements equal to 100 and off-diagonal elements equal to 20.
-#'The prior on \eqn{\epsilon} is a re-parameterized gamma distribution with a mean of
-#'\eqn{\hat{\sigma ^ 2}} and a variance of \eqn{2\hat{sigma ^ 2} / n}, where \eqn{hat{sigma ^ 2}}
-#'is the variance from a fitted (frequentist) least squares model.
+#'matrix with diagonal elements equal to 100 and off-diagonal elements equal to 0.
+#'The prior on \eqn{\sigma ^ 2} is a Inverse Gamma(0.1, 0.1)
 #'
 #'If \code{formula = "BART"}, the function fits the Bayesian Additive Regression Trees
 #'model, but with a modified prior on the terminal nodes. The prior on each terminal node
 #'is
 #'\deqn{N(0, \gamma\sigma ^ 2).} The package uses the default value
-#'\deqn{\gamma = 1 / (16 * m * \hat{sigma ^ 2})} where $m$ is the number of trees and \eqn{\hat{sigma ^ 2}} is the variance of \eqn{Y}.
+#'\deqn{\gamma = 1 / (16 * m * \hat{sigma ^ 2})} where \eqn{m} is the number of trees and \eqn{\hat{sigma ^ 2}} is the variance of \eqn{Y}.
 #'
 #'Borrowing between data sources is done with
 #'Multisource Exchangeability Models
@@ -71,6 +69,11 @@
 #'Must match a column name in the data.
 #'@param primary_source character variable indicating the primary source. Must match
 #'one of the values of \code{src_var}.
+#'@param exch_prob numeric vector giving prior probability that each source is exchangeable
+#'with the primary source. Number of elements must be equal to the number of sources
+#'minus 1. Each element must be between 0 and 1.
+#'Order of probabilities should match the order returned by calling \code{levels(factor(...))}
+#'on the source vector. See the vignette for an example of usage.
 #'@param trt_var which variable indicates the treatment.
 #'Must match a column name in the data. Must be coded as numeric values 0 and 1, 0 for
 #'untreated, 1 for treated.
@@ -111,6 +114,8 @@
 #'
 #'\item{post_probs}{Posterior probability that each MEM (shown in the list element \code{MEMs})
 #'is the true model.}
+#'
+#'\item{exch_prob}{Prior probability that each source is exchangeable with the primary source.}
 #'
 #'\item{beta_post_mean}{If \code{estimator = "bayesian_lm"}, a matrix with the posterior means
 #'of the coefficients for the primary source from each MEM. If \code{estimator = "BART"}, \code{NA}}.
