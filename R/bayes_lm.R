@@ -36,10 +36,11 @@ bayes_lm <- function(Y, X, X0, X1, ndpost) {
   p <- ncol(X)
   n <- nrow(X)
 
-  flm <- lm(Y ~ X + 0)
+  # flm <- lm(Y ~ X + 0)
 
-  # (fairly) vague Normal-Inverse Gamma prior specifications
-  muBeta <- unname(coef(flm))
+  # uninformative Normal-Inverse Gamma prior specifications
+  # muBeta <- unname(coef(flm))
+  muBeta <- rep(0, p)
   # rho    <- 0.2
   rho <- 0
   Vbeta  <- 100 * (rho * matrix(1, p, p) + (1 - rho) * diag(p))
@@ -49,9 +50,9 @@ bayes_lm <- function(Y, X, X0, X1, ndpost) {
   # and asymptotic variance of sigma ^ 2.
   # ss_mu <- 10 ^ 2    # old: mean for sigma ^ 2
   # ss_sd <- 2         # old: sd for sigma ^ 2
-  ss_mu <- summary(flm)$sigma ^ 2
-  if (is.na(ss_mu))
-    stop("insufficient number of observations to fit model.")
+  #ss_mu <- summary(flm)$sigma ^ 2
+  #if (is.na(ss_mu))
+    #stop("insufficient number of observations to fit model.")
   # ss_sd <- sqrt(2 * ss_mu ^ 4 / n)
   # mean and sd re-paramaterized for inverse gamma dist'n
   # b <- ss_mu ^ 3 / ss_sd ^ 2 + ss_mu
@@ -80,6 +81,15 @@ bayes_lm <- function(Y, X, X0, X1, ndpost) {
   mu    <- X %*% muBeta # should be == 0 unless muBeta updated
   shape <- b / a * (diag(n) + X %*% Vbeta %*% tX)
   log_marg_like <- dmvt(c(Y), c(mu), shape, df = 2 * a)
+
+  # Monte Carlo verification of log_marg_like
+  # lml <- numeric(1e3)
+  # for (jj in seq_len(1e3)) {
+  #   rss <- 1 / rgamma(1, a, b)
+  #   rBeta <- mvtnorm::rmvnorm(1, muBeta, sigma =  rss * Vbeta)
+  #   rmu <- X %*% t(rBeta)
+  #   lml[jj] <- sum(dnorm(c(Y), c(rmu), sd = sqrt(rss), log = TRUE))
+  # }
 
   # don't name dimensions here. Will be done in the calling function.
   beta_post <- array(dim = c(ndpost, p))
