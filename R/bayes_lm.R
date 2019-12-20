@@ -28,46 +28,159 @@
 #          assigned to the treatment group 1 and are compliant.
 #@param ndpost The desired number of draws from the posterior distribution of
 #              \out{E(Y<sub>1</sub> - Y<sub>0</sub>)}.
+# bayes_lm <- function(Y, X, X0, X1, ndpost) {
+#   # production version of bayes_lm
+#
+#   X <- as.matrix(X)
+#   X0 <- as.matrix(X0)
+#   X1 <- as.matrix(X1)
+#   p <- ncol(X)
+#   n <- nrow(X)
+#
+#   # flm <- lm(Y ~ X + 0)
+#
+#   # uninformative Normal-Inverse Gamma prior specifications
+#   # muBeta <- unname(coef(flm))
+#   muBeta <- rep(0, p)
+#   # rho    <- 0.2
+#   rho <- 0
+#   Vbeta  <- 100 * (rho * matrix(1, p, p) + (1 - rho) * diag(p))
+#
+#   # specification for IG(a, b) prior on sigma ^ 2. This
+#   # prior is specified using the frequentist point estimate
+#   # and asymptotic variance of sigma ^ 2.
+#   # ss_mu <- 10 ^ 2    # old: mean for sigma ^ 2
+#   # ss_sd <- 2         # old: sd for sigma ^ 2
+#   #ss_mu <- summary(flm)$sigma ^ 2
+#   #if (is.na(ss_mu))
+#     #stop("insufficient number of observations to fit model.")
+#   # ss_sd <- sqrt(2 * ss_mu ^ 4 / n)
+#   # mean and sd re-paramaterized for inverse gamma dist'n
+#   # b <- ss_mu ^ 3 / ss_sd ^ 2 + ss_mu
+#   # a <- (b + ss_mu) / ss_mu
+#   a <- 0.1
+#   b <- 0.1
+#
+#   # b / (a - 1)
+#   # b ^ 2 / ((a - 1) ^ 2 * (a - 2))
+#
+#   Vbeta_inv <- solve(Vbeta)
+#   tX <- t(X)
+#   tXX <- tX %*% X
+#   tryCatch(solve(tXX),
+#     error = function(e) warning("Multicollinearity in design matrix X."))
+#
+#
+#   # posterior paramaters
+#   V_star <- solve(Vbeta_inv + tXX)
+#   mu_star <- V_star %*% (Vbeta_inv %*% muBeta + tX %*% Y)
+#   a_star <- a + n / 2
+#   b_star <- b + 1 / 2 * c((t(muBeta) %*% Vbeta_inv %*% muBeta +
+#       t(Y) %*% Y - t(mu_star) %*% solve(V_star) %*% mu_star))
+#
+#   # marginal likelihood ---
+#   mu    <- X %*% muBeta # should be == 0 unless muBeta updated
+#   shape <- b / a * (diag(n) + X %*% Vbeta %*% tX)
+#   log_marg_like <- dmvt(c(Y), c(mu), shape, df = 2 * a)
+#
+#   # Monte Carlo verification of log_marg_like
+#   # lml <- numeric(1e3)
+#   # for (jj in seq_len(1e3)) {
+#   #   rss <- 1 / rgamma(1, a, b)
+#   #   rBeta <- mvtnorm::rmvnorm(1, muBeta, sigma =  rss * Vbeta)
+#   #   rmu <- X %*% t(rBeta)
+#   #   lml[jj] <- sum(dnorm(c(Y), c(rmu), sd = sqrt(rss), log = TRUE))
+#   # }
+#
+#   # don't name dimensions here. Will be done in the calling function.
+#   beta_post <- array(dim = c(ndpost, p))
+#
+#   colnames(beta_post) <- colnames(X)
+#
+#   Y0 <- array(dim = c(ndpost, nrow(X0)))
+#   Y1 <- array(dim = c(ndpost, nrow(X1)))
+#
+#   # draw from posterior
+#   tryCatch(
+#     ss_post <- 1 / rgamma(ndpost, a_star, b_star),
+#     error = function(cnd) stop("problem drawing from sigma ^ 2 posterior.")
+#   )
+#
+#
+#   for(ii in seq_len(ndpost)) {
+#     beta_post[ii, ] <- mu_star + t(chol(ss_post[ii] * V_star)) %*% rnorm(p)
+#     mu_post  <- c(X %*% beta_post[ii, ])
+#     Y0[ii, ] <- t(X0 %*% beta_post[ii, ])
+#     Y1[ii, ] <- t(X1 %*% beta_post[ii, ])
+#   }
+#
+#   # bs <- cov(beta_post)
+#   # fr <- vcov(summary(lm(Y ~ X + 0)))
+#   # round(bs / fr, 2)
+#   # colMeans(beta_post) / coef(lm(Y ~ X + 0))
+#
+#   pate_post <- apply(Y1 - Y0, 1, bayes_boot_mean)
+#
+#   out <- list(
+#     log_marg_like = log_marg_like,
+#     pate_post     = pate_post)
+#   out$EY0 <- rowMeans(Y0)
+#   out$EY1 <- rowMeans(Y1)
+#   out$beta_post <- beta_post
+#
+#   out
+# }
+
 bayes_lm <- function(Y, X, X0, X1, ndpost) {
+  # development version of bayes_lm
 
   X <- as.matrix(X)
+  tX <- t(X)
+  tXX <- tX %*% X
+  tryCatch(solve(tXX),
+    error = function(e) warning("Multicollinearity in design matrix X."))
+
   X0 <- as.matrix(X0)
   X1 <- as.matrix(X1)
   p <- ncol(X)
   n <- nrow(X)
 
-  # flm <- lm(Y ~ X + 0)
+  flm <- lm(Y ~ X + 0)
 
   # uninformative Normal-Inverse Gamma prior specifications
   # muBeta <- unname(coef(flm))
-  muBeta <- rep(0, p)
+  # muBeta <- rep(0, p)
+  muBeta <- c(coef(flm)[1], rep(0, p - 1))
   # rho    <- 0.2
-  rho <- 0
-  Vbeta  <- 100 * (rho * matrix(1, p, p) + (1 - rho) * diag(p))
+  # rho <- 0
+  # Vbeta  <- 100 * (rho * matrix(1, p, p) + (1 - rho) * diag(p))
+  Vbeta <- solve(1 / n * tXX)
 
   # specification for IG(a, b) prior on sigma ^ 2. This
   # prior is specified using the frequentist point estimate
   # and asymptotic variance of sigma ^ 2.
   # ss_mu <- 10 ^ 2    # old: mean for sigma ^ 2
   # ss_sd <- 2         # old: sd for sigma ^ 2
-  #ss_mu <- summary(flm)$sigma ^ 2
+  ss_mu <- sigma(flm) ^ 2
   #if (is.na(ss_mu))
     #stop("insufficient number of observations to fit model.")
   # ss_sd <- sqrt(2 * ss_mu ^ 4 / n)
+  ss_sd <- sqrt(2 * ss_mu ^ 4 / 1)
   # mean and sd re-paramaterized for inverse gamma dist'n
-  # b <- ss_mu ^ 3 / ss_sd ^ 2 + ss_mu
-  # a <- (b + ss_mu) / ss_mu
-  a <- 0.1
-  b <- 0.1
+  b <- ss_mu ^ 3 / ss_sd ^ 2 + ss_mu
+  a <- (b + ss_mu) / ss_mu
+  # a <- 0.1
+  # b <- 0.1
+  # a <- 2.58 / 2
+  # b <- 0.28
+
 
   # b / (a - 1)
   # b ^ 2 / ((a - 1) ^ 2 * (a - 2))
 
-  Vbeta_inv <- solve(Vbeta)
-  tX <- t(X)
-  tXX <- tX %*% X
-  tryCatch(solve(tXX),
-    error = function(e) warning("Multicollinearity in design matrix X."))
+  Vbeta_inv <- solve(Vbeta) # could be simplified to 'n * tXX'
+  # tX <- t(X)
+  # tXX <- tX %*% X
 
 
   # posterior paramaters
@@ -129,26 +242,3 @@ bayes_lm <- function(Y, X, X0, X1, ndpost) {
 
   out
 }
-
-# set.seed(100)
-# n <- 1e3
-# dat <- data.frame(
-#   src = sample(c("a", "b", "c"), n, replace = TRUE),
-#   trt = sample(c(1, 0), n, replace = TRUE),
-#   x1  = rnorm(n),
-#   x2  = rnorm(n),
-#   y   = rnorm(n)
-# )
-
-# mf <- estimate_pate(y ~ src + trt + x1 + x2, data = dat, src_var = "src", primary_source = "a", trt_var = "trt")
-# mt <- attr(mf, "terms")
-# mm <- model.matrix(mt, mf)
-#
-# X0 <- X1 <- model.matrix(mt, subset(mf, src == "a"))
-# X0[, 'trt'] <- 0
-# X1[, 'trt'] <- 1
-# Y <- matrix(model.response(mf, "numeric"), ncol = 1)
-
-# debug(fit_bayes_lm)
-# bylm <- bayes_lm(Y, X = mm, X0, X1, ndpost = 1e4)
-
