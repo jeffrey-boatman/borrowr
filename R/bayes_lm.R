@@ -137,7 +137,7 @@ bayes_lm <- function(Y, X, X0, X1, ndpost) {
   X <- as.matrix(X)
   tX <- t(X)
   tXX <- tX %*% X
-  tryCatch(solve(tXX),
+  tryCatch(tXXinv <-  solve(tXX),
     error = function(e) warning("Multicollinearity in design matrix X."))
 
   X0 <- as.matrix(X0)
@@ -150,11 +150,13 @@ bayes_lm <- function(Y, X, X0, X1, ndpost) {
   # uninformative Normal-Inverse Gamma prior specifications
   # muBeta <- unname(coef(flm))
   # muBeta <- rep(0, p)
-  muBeta <- c(coef(flm)[1], rep(0, p - 1))
+  # muBeta <- c(coef(flm)[1], rep(0, p - 1))
+  muBeta <- c(mean(Y), rep(0, p - 1))
   # rho    <- 0.2
   # rho <- 0
   # Vbeta  <- 100 * (rho * matrix(1, p, p) + (1 - rho) * diag(p))
-  Vbeta <- solve(1 / n * tXX)
+  # Vbeta <- solve(1 / n * tXX)
+  Vbeta <- n * tXXinv # solve(1 / n * tXX)
 
   # specification for IG(a, b) prior on sigma ^ 2. This
   # prior is specified using the frequentist point estimate
@@ -178,7 +180,8 @@ bayes_lm <- function(Y, X, X0, X1, ndpost) {
   # b / (a - 1)
   # b ^ 2 / ((a - 1) ^ 2 * (a - 2))
 
-  Vbeta_inv <- solve(Vbeta) # could be simplified to 'n * tXX'
+  # Vbeta_inv <- solve(Vbeta) # could be simplified to '1 / n * tXX'
+  Vbeta_inv <- 1 / n * tXX
   # tX <- t(X)
   # tXX <- tX %*% X
 

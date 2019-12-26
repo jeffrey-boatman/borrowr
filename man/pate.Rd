@@ -5,7 +5,8 @@
 \title{Population Average Treatment Effect (PATE)}
 \usage{
 pate(formula, estimator = c("BART", "bayesian_lm"), data, src_var,
-  primary_source, exch_prob, trt_var, compliance_var, ndpost = 1000, ...)
+  primary_source, exch_prob, trt_var, compliance_var, ndpost = 1000,
+  model_prior = c("none", "power", "powerlog"), ...)
 }
 \arguments{
 \item{formula}{An object of class formula. The left hand side must be the outcome,
