@@ -146,7 +146,7 @@
 #' 19(2): 169-184.
 pate <- function(formula, estimator = c("BART", "bayesian_lm"), data, src_var,
   primary_source, exch_prob, trt_var,
-  compliance_var, ndpost = 1e3, ...) {
+  compliance_var, ndpost = 1e3, model_prior= c("none", "power", "powerlog"), ...) {
 
   cl <- match.call()
   mf <- match.call(expand.dots = FALSE)
@@ -155,6 +155,7 @@ pate <- function(formula, estimator = c("BART", "bayesian_lm"), data, src_var,
   # force(formula)
   # force(data)
   estimator <- match.arg(estimator)
+  model_prior <- match.arg(model_prior)
   nc <- !missing(compliance_var)
 
   # these don't work
@@ -286,6 +287,16 @@ pate <- function(formula, estimator = c("BART", "bayesian_lm"), data, src_var,
       stop("elements of 'exch_prob' must be between 0 and 1")
     if (length(exch_prob) != nl - 1)
       stop("'length(exch_prob)' must equal the number of sources minus 1")
+  }
+
+  # model_prior stuff
+  p <- ncol(fac)
+  if (model_prior == "power") {
+    ep <- (1 / 2) ^ (p + 1) # + 1 for intercept
+    exch_prob <- rep(ep, nl - 1)
+  } else if (model_prior == "powerlog") {
+    ep <- (1 / 2) ^ (log2(p + 1)) # + 1 for intercept
+    exch_prob <- rep(ep, nl - 1)
   }
 
 
