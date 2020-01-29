@@ -135,6 +135,9 @@ fit_mems <- function(mf, estimator, ndpost, exch_prob, ...) {
       X1       = list(X1),
       ndpost   = ndpost,
       SIMPLIFY = FALSE)
+    multicollinearity_flag <- any(sapply(sepfits, "[[", "multicollinearity_flag"))
+    if (multicollinearity_flag)
+      warning("Multicollinearity in design matrix X.")
   } else if (estimator == "BART") {
     #for BART only
     message("Fitting BART model to each data source...")

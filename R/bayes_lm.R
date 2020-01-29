@@ -133,17 +133,43 @@
 
 bayes_lm <- function(Y, X, X0, X1, ndpost) {
   # development version of bayes_lm
-
+  multicollinearity_flag <- FALSE
   X <- as.matrix(X)
   tX <- t(X)
   tXX <- tX %*% X
-  tryCatch(tXXinv <-  solve(tXX),
-    error = function(e) warning("Multicollinearity in design matrix X."))
-
   X0 <- as.matrix(X0)
   X1 <- as.matrix(X1)
   p <- ncol(X)
   n <- nrow(X)
+
+  # tryCatch(tXXinv <-  solve(tXX),
+  #  error = function(e) warning("Multicollinearity in design matrix X."))
+  tr <- try(tXXinv <- solve(tXX), silent = TRUE)
+  if (class(tr) == "try-error") {
+    multicollinearity_flag <- TRUE
+    # warning("Multicollinearity in design matrix X.")
+    Xm <- colMeans(X)
+    Xs <- apply(X, 2, sd)
+    #Xm <- t(array(Xm, dim = rev(dim(X))))
+    #Xs <- t(array(Xs, dim = rev(dim(X))))
+    #dimnames(Xm) <- dimnames(X)
+    #dimnames(Xs) <- dimnames(X)
+    if ("(Intercept)" %in% colnames(X)) {
+      Xm["(Intercept)"] <- 0
+      Xs["(Intercept)"] <- 1
+      lambda <- diag(c(0, rep(0.1, p - 1)))
+    } else {
+      lambda <- 0.1 * diag(p)
+    }
+    X  <- stdize_matrix(X,  Xm, Xs)
+    X0 <- stdize_matrix(X0, Xm, Xs) # (X0 - Xm) / Xs
+    X1 <- stdize_matrix(X1, Xm, Xs) # (X1 - Xm) / Xs
+    tX <- t(X)
+    tXX <- tX %*% X + lambda
+    tryCatch(tXXinv <- solve(tXX),
+      error = function(e) stop("regularization failed."))
+  }
+
 
   flm <- lm(Y ~ X + 0)
 
@@ -242,6 +268,7 @@ bayes_lm <- function(Y, X, X0, X1, ndpost) {
   out$EY0 <- rowMeans(Y0)
   out$EY1 <- rowMeans(Y1)
   out$beta_post <- beta_post
+  out$multicollinearity_flag <- multicollinearity_flag
 
   out
 }

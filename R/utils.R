@@ -32,3 +32,9 @@ quiet <- function(f) {
 # none <- Negate(any)
 
 `%!in%` <- Negate(`%in%`)
+
+stdize_matrix <- function(x, m, s) {
+  m <- t(array(m, dim = rev(dim(x))))
+  s <- t(array(s, dim = rev(dim(x))))
+  (x - m) / s
+}
