@@ -9,3 +9,5 @@ devtools::install_github("jeffrey-boatman/borrowr", build = TRUE, build_opts = c
 To do:
 
   - update documentation (changes included: adding argument for prior probability of exchangeability, updated gamma prior for bayesian linear model, ...)
+  
+  # foo
