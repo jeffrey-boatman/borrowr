@@ -44,6 +44,9 @@ include the compliance variable.}
 
 \item{ndpost}{number of draws from the posterior}
 
+\item{model_prior}{specifices the prior probability of exchangebility of data sources. Details for priors
+are given in Boatman et al. (2020).}
+
 \item{...}{additional arguments passed to BART}
 }
 \value{
@@ -147,4 +150,7 @@ of Applied Statistics, 4(1): 266-298.
 Kaizer, Alexander M., Koopmeiners, Joseph S., Hobbs, Brian P. (2018) Bayesian
 hierarchical modeling based on multisource exchangeability. Biostatistics,
 19(2): 169-184.
+
+Boatman, Jeffrey A., Vock, David. M, and Koopmeiners, Joseph S. (2020) Borrowing from
+Supplemental Sources to Estimate Causal Effects from a Primary Data Source. arXiv:2003.09680
 }
