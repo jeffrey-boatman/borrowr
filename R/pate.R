@@ -84,6 +84,9 @@
 #'noncompliant, 1 for compliant. If this argument is specified, the formula must also
 #'include the compliance variable.
 #'@param ndpost number of draws from the posterior
+#'
+#'@param model_prior specifices the prior probability of exchangebility of data sources. Details for priors
+#'are given in Boatman et al. (2020).
 #'@param ... additional arguments passed to BART
 #'
 #'@return
@@ -144,6 +147,9 @@
 #'Kaizer, Alexander M., Koopmeiners, Joseph S., Hobbs, Brian P. (2018) Bayesian
 #' hierarchical modeling based on multisource exchangeability. Biostatistics,
 #' 19(2): 169-184.
+#'
+#' Boatman, Jeffrey A., Vock, David. M, and Koopmeiners, Joseph S. (2020) Borrowing from
+#' Supplemental Sources to Estimate Causal Effects from a Primary Data Source. arXiv:2003.09680
 pate <- function(formula, estimator = c("BART", "bayesian_lm"), data, src_var,
   primary_source, exch_prob, trt_var,
   compliance_var, ndpost = 1e3, model_prior= c("none", "power", "powerlog"), ...) {
