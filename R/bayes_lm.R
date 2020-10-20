@@ -145,7 +145,7 @@ bayes_lm <- function(Y, X, X0, X1, ndpost) {
   # tryCatch(tXXinv <-  solve(tXX),
   #  error = function(e) warning("Multicollinearity in design matrix X."))
   tr <- try(tXXinv <- solve(tXX), silent = TRUE)
-  if (class(tr) == "try-error") {
+  if (class(tr)[1L] == "try-error") {
     multicollinearity_flag <- TRUE
     # warning("Multicollinearity in design matrix X.")
     Xm <- colMeans(X)
